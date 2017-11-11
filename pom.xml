@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.googlecode.genericdao</groupId>
+	<groupId>es.jklabs.genericdao</groupId>
 	<artifactId>genericdao-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>1.2.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 
 	<name>Hibernate Generic DAO</name>
 	<url>http://code.google.com/p/hibernate-generic-dao</url>
@@ -33,16 +33,11 @@
 		<module>dao-hibernate</module>
 	</modules>
 
-	<scm>
-		<connection>scm:svn:http://hibernate-generic-dao.googlecode.com/svn/trunk</connection>
-		<developerConnection>scm:svn:https://hibernate-generic-dao.googlecode.com/svn/trunk</developerConnection>
-		<url>http://hibernate-generic-dao.googlecode.com/svn/trunk</url>
-	</scm>
 	<developers>
 		<developer>
-			<id>dwolvert</id>
-			<name>David Wolverton</name>
-			<email>dwolvert@gmail.com</email>
+			<id>JCPrieto</id>
+			<name>Juan Carlos Prieto Silos</name>
+			<email>JuanC.Prieto.Silos@gmail.com</email>
 		</developer>
 	</developers>
 	<build>
@@ -64,8 +59,8 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>6</source>
-					<target>6</target>
+					<source>8</source>
+					<target>8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -104,10 +99,6 @@
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<show>protected</show>
-					<includePackageNames>com.googlecode</includePackageNames>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>

@@ -5,7 +5,7 @@
 	<artifactId>hibernate-maven-web</artifactId>
 	<packaging>war</packaging>
 	<name>Hibernate Generic DAO Sample - Hibernate, Maven, Web</name>
-	<version>1.2.0-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<description>Hibernate Generic DAO Sample WebApp w/ Maven, Spring and Hibernate</description>
 	<url>http://code.google.com/p/hibernate-generic-dao/</url>
 	<inceptionYear>2009</inceptionYear>
@@ -19,18 +19,17 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-					<tasks></tasks>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>com.googlecode.genericdao</groupId>
+			<groupId>es.jklabs.genericdao</groupId>
 			<artifactId>dao-hibernate</artifactId>
-			<version>1.2.0-SNAPSHOT</version>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		
 		<!-- Using Log4J for logging -->

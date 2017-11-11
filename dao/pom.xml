@@ -2,18 +2,18 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>dao</artifactId>
 	<packaging>jar</packaging>
-	<version>1.2.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>Hibernate Generic DAO - DAO</name>
 	
 	<parent>
 		<artifactId>genericdao-parent</artifactId>
-		<groupId>com.googlecode.genericdao</groupId>
-		<version>1.2.1-SNAPSHOT</version>
+		<groupId>es.jklabs.genericdao</groupId>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>	
 	
 	<dependencies>
 		<dependency>
-			<groupId>com.googlecode.genericdao</groupId>
+			<groupId>es.jklabs.genericdao</groupId>
 			<artifactId>search</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -25,13 +25,13 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>com.googlecode.genericdao</groupId>
+			<groupId>es.jklabs.genericdao</groupId>
 			<artifactId>test-base</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.googlecode.genericdao</groupId>
+			<groupId>es.jklabs.genericdao</groupId>
 			<artifactId>search-jpa-hibernate</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
