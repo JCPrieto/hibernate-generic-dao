@@ -6,22 +6,6 @@
 	<version>1.0.0-SNAPSHOT</version>
 
 	<name>Hibernate Generic DAO</name>
-	<url>http://code.google.com/p/hibernate-generic-dao</url>
-	<inceptionYear>2008</inceptionYear>
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-
-	<!-- For upload to Sonatype Open Source Maven staging Repo -->
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>5</version>
-	</parent>
 
 	<modules>
 		<module>test-base</module>
