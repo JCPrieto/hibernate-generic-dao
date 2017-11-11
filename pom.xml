@@ -8,9 +8,7 @@
 	<name>Hibernate Generic DAO</name>
 
 	<modules>
-		<module>test-base</module>
 		<module>search</module>
-		<module>test-search</module>
 		<module>search-hibernate</module>
 		<module>search-jpa-hibernate</module>
 		<module>dao</module>
@@ -45,15 +43,6 @@
 				<configuration>
 					<source>8</source>
 					<target>8</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<includes>
-						<include>**/junit/googlecode/genericdao/**</include>
-					</includes>
 				</configuration>
 			</plugin>
 			<plugin>

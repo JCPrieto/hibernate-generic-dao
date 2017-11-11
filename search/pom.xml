@@ -22,12 +22,5 @@
 		    <version>1.0.1.Final</version>
 		    <scope>provided</scope>
 		</dependency>
-		
-		<dependency>
-			<groupId>es.jklabs.genericdao</groupId>
-			<artifactId>test-base</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 </project>

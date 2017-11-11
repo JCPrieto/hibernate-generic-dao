@@ -22,13 +22,6 @@
 			<artifactId>search-hibernate</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
-		<dependency>
-			<groupId>es.jklabs.genericdao</groupId>
-			<artifactId>test-base</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
 
 	</dependencies>
 </project>

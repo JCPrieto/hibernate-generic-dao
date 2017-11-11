@@ -23,12 +23,5 @@
 			<version>5.2.12.Final</version>
 		</dependency>
 
-		<dependency>
-			<groupId>es.jklabs.genericdao</groupId>
-			<artifactId>test-search</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
-
 	</dependencies>
 </project>
