@@ -14,6 +14,8 @@
  */
 package com.googlecode.genericdao.search;
 
+import javax.activation.UnsupportedDataTypeException;
+
 import static com.googlecode.genericdao.search.ISearch.RESULT_ARRAY;
 import static com.googlecode.genericdao.search.ISearch.RESULT_AUTO;
 import static com.googlecode.genericdao.search.ISearch.RESULT_LIST;
@@ -159,21 +161,21 @@ public class SearchUtil {
 	/**
 	 * Add a filter that uses the == operator.
 	 */
-	public static void addFilterEqual(IMutableSearch search, String property, Object value) {
+	public static void addFilterEqual(IMutableSearch search, String property, Object value) throws UnsupportedDataTypeException {
 		addFilter(search, Filter.equal(property, value));
 	}
 
 	/**
 	 * Add a filter that uses the >= operator.
 	 */
-	public static void addFilterGreaterOrEqual(IMutableSearch search, String property, Object value) {
+	public static void addFilterGreaterOrEqual(IMutableSearch search, String property, Object value) throws UnsupportedDataTypeException {
 		addFilter(search, Filter.greaterOrEqual(property, value));
 	}
 
 	/**
 	 * Add a filter that uses the > operator.
 	 */
-	public static void addFilterGreaterThan(IMutableSearch search, String property, Object value) {
+	public static void addFilterGreaterThan(IMutableSearch search, String property, Object value) throws UnsupportedDataTypeException {
 		addFilter(search, Filter.greaterThan(property, value));
 	}
 
@@ -187,7 +189,7 @@ public class SearchUtil {
 	/**
 	 * Add a filter that uses the IN operator.
 	 */
-	public static void addFilterIn(IMutableSearch search, String property, Collection<?> value) {
+	public static void addFilterIn(IMutableSearch search, String property, Collection<?> value) throws UnsupportedDataTypeException {
 		addFilter(search, Filter.in(property, value));
 	}
 
@@ -198,21 +200,21 @@ public class SearchUtil {
 	 * This takes a variable number of parameters. Any number of values can be
 	 * specified.
 	 */
-	public static void addFilterIn(IMutableSearch search, String property, Object... value) {
+	public static void addFilterIn(IMutableSearch search, String property, Object... value) throws UnsupportedDataTypeException {
 		addFilter(search, Filter.in(property, value));
 	}
 
 	/**
 	 * Add a filter that uses the <= operator.
 	 */
-	public static void addFilterLessOrEqual(IMutableSearch search, String property, Object value) {
+	public static void addFilterLessOrEqual(IMutableSearch search, String property, Object value) throws UnsupportedDataTypeException {
 		addFilter(search, Filter.lessOrEqual(property, value));
 	}
 
 	/**
 	 * Add a filter that uses the < operator.
 	 */
-	public static void addFilterLessThan(IMutableSearch search, String property, Object value) {
+	public static void addFilterLessThan(IMutableSearch search, String property, Object value) throws UnsupportedDataTypeException {
 		addFilter(search, Filter.lessThan(property, value));
 	}
 
@@ -247,7 +249,7 @@ public class SearchUtil {
 	/**
 	 * Add a filter that uses the NOT IN operator.
 	 */
-	public static void addFilterNotIn(IMutableSearch search, String property, Collection<?> value) {
+	public static void addFilterNotIn(IMutableSearch search, String property, Collection<?> value) throws UnsupportedDataTypeException {
 		addFilter(search, Filter.notIn(property, value));
 	}
 
@@ -258,7 +260,7 @@ public class SearchUtil {
 	 * This takes a variable number of parameters. Any number of values can be
 	 * specified.
 	 */
-	public static void addFilterNotIn(IMutableSearch search, String property, Object... value) {
+	public static void addFilterNotIn(IMutableSearch search, String property, Object... value) throws UnsupportedDataTypeException {
 		addFilter(search, Filter.notIn(property, value));
 	}
 

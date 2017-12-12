@@ -28,6 +28,8 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.activation.UnsupportedDataTypeException;
+
 /**
  * This class provides two methods for generating query language to fulfill an
  * <code>ISearch</code>.
@@ -1240,11 +1242,11 @@ public abstract class BaseSearchProcessor {
 
 	private static final ExampleOptions defaultExampleOptions = new ExampleOptions();
 
-	public Filter getFilterFromExample(Object example) {
+	public Filter getFilterFromExample(Object example) throws UnsupportedDataTypeException {
 		return getFilterFromExample(example, null);
 	}
 
-	public Filter getFilterFromExample(Object example, ExampleOptions options) {
+	public Filter getFilterFromExample(Object example, ExampleOptions options) throws UnsupportedDataTypeException {
 		if (example == null)
 			return null;
 		if (options == null)
@@ -1265,7 +1267,7 @@ public abstract class BaseSearchProcessor {
 	}
 
 	private void getFilterFromExampleRecursive(Object example, Metadata metadata, ExampleOptions options,
-			LinkedList<String> path, List<Filter> filters) {
+			LinkedList<String> path, List<Filter> filters) throws UnsupportedDataTypeException {
 		if (metadata.isEntity() && !metadata.getIdType().isEmbeddable()) {
 			Object id = metadata.getIdValue(example);
 			if (id != null) {

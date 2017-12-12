@@ -224,7 +224,7 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the == operator.
 	 */
-	public Search addFilterEqual(String property, Object value, ZoneId zoneId) {
+	public Search addFilterEqual(String property, Object value, ZoneId zoneId) throws UnsupportedDataTypeException {
 		if(value instanceof LocalDateTime) {
 			value = ((LocalDateTime) value).atZone(zoneId)
 					.withZoneSameInstant(ZoneId.of("UTC"))
@@ -238,7 +238,7 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the >= operator.
 	 */
-	public Search addFilterGreaterOrEqual(String property, Object value, ZoneId zoneId) {
+	public Search addFilterGreaterOrEqual(String property, Object value, ZoneId zoneId) throws UnsupportedDataTypeException {
 		if(value instanceof LocalDateTime) {
 			value = ((LocalDateTime) value).atZone(zoneId)
 					.withZoneSameInstant(ZoneId.of("UTC"))
@@ -252,7 +252,7 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the > operator.
 	 */
-	public Search addFilterGreaterThan(String property, Object value, ZoneId zoneId) {
+	public Search addFilterGreaterThan(String property, Object value, ZoneId zoneId) throws UnsupportedDataTypeException {
 		if(value instanceof LocalDateTime) {
 			value = ((LocalDateTime) value).atZone(zoneId)
 					.withZoneSameInstant(ZoneId.of("UTC"))
@@ -266,7 +266,7 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the IN operator.
 	 */
-	public Search addFilterIn(String property, Collection<?> value, ZoneId zoneId) {
+	public Search addFilterIn(String property, Collection<?> value, ZoneId zoneId) throws UnsupportedDataTypeException {
 		for(Object v : value){
 			if(v instanceof LocalDateTime) {
 				v = ((LocalDateTime) v).atZone(zoneId)
@@ -285,7 +285,7 @@ public class Search implements IMutableSearch, Serializable {
 	 * This takes a variable number of parameters. Any number of values can be
 	 * specified.
 	 */
-	public Search addFilterIn(String property, ZoneId zoneId, Object... value) {
+	public Search addFilterIn(String property, ZoneId zoneId, Object... value) throws UnsupportedDataTypeException {
 		for(Object v : value){
 			if(v instanceof LocalDateTime) {
 				v = ((LocalDateTime) v).atZone(zoneId)
@@ -301,7 +301,7 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the NOT IN operator.
 	 */
-	public Search addFilterNotIn(String property, Collection<?> value, ZoneId zoneId) {
+	public Search addFilterNotIn(String property, Collection<?> value, ZoneId zoneId) throws UnsupportedDataTypeException {
 		for(Object v : value){
 			if(v instanceof LocalDateTime) {
 				v = ((LocalDateTime) v).atZone(zoneId)
@@ -320,7 +320,7 @@ public class Search implements IMutableSearch, Serializable {
 	 * This takes a variable number of parameters. Any number of values can be
 	 * specified.
 	 */
-	public Search addFilterNotIn(String property, ZoneId zoneId, Object... value) {
+	public Search addFilterNotIn(String property, ZoneId zoneId, Object... value) throws UnsupportedDataTypeException {
 		for(Object v : value){
 			if(v instanceof LocalDateTime) {
 				v = ((LocalDateTime) v).atZone(zoneId)
@@ -335,7 +335,7 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the <= operator.
 	 */
-	public Search addFilterLessOrEqual(String property, Object value, ZoneId zoneId) {
+	public Search addFilterLessOrEqual(String property, Object value, ZoneId zoneId) throws UnsupportedDataTypeException {
 		if(value instanceof LocalDateTime) {
 			value = ((LocalDateTime) value).atZone(zoneId)
 					.withZoneSameInstant(ZoneId.of("UTC"))
@@ -349,7 +349,7 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the < operator.
 	 */
-	public Search addFilterLessThan(String property, Object value, ZoneId zoneId) {
+	public Search addFilterLessThan(String property, Object value, ZoneId zoneId) throws UnsupportedDataTypeException {
 		if(value instanceof LocalDateTime) {
 			value = ((LocalDateTime) value).atZone(zoneId)
 					.withZoneSameInstant(ZoneId.of("UTC"))

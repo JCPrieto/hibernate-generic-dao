@@ -71,20 +71,13 @@ public class Filter implements Serializable {
 
 	}
 
-	public Filter(String property, Object value, int operator) throws UnsupportedDataTypeException {
-        if(value instanceof LocalDateTime)  {
-            throw new UnsupportedDataTypeException();
-        }
+	public Filter(String property, Object value, int operator) {
         this.property = property;
 		this.value = value;
 		this.operator = operator;
 	}
 
-	public Filter(String property, Object value) throws UnsupportedDataTypeException {
-        if(value instanceof LocalDateTime)  {
-            throw new UnsupportedDataTypeException();
-        }
-
+	public Filter(String property, Object value) {
         this.property = property;
 		this.value = value;
 		this.operator = OP_EQUAL;
@@ -149,21 +142,22 @@ public class Filter implements Serializable {
 	 * Create a new Filter using the <= operator.
 	 */
 	public static Filter lessOrEqual(String property, Object value) throws UnsupportedDataTypeException {
-        if(value instanceof LocalDateTime)  {
-            throw new UnsupportedDataTypeException();
-        }
-       	return new Filter(property, value, OP_LESS_OR_EQUAL);
+		if(value instanceof LocalDateTime)  {
+			throw new UnsupportedDataTypeException();
+		}
+
+		return new Filter(property, value, OP_LESS_OR_EQUAL);
 	}
 
 	/**
 	 * Create a new Filter using the >= operator.
 	 */
 	public static Filter greaterOrEqual(String property, Object value) throws UnsupportedDataTypeException {
-        if(value instanceof LocalDateTime)  {
-            throw new UnsupportedDataTypeException();
-        }
+		if(value instanceof LocalDateTime)  {
+			throw new UnsupportedDataTypeException();
+		}
 
-        return new Filter(property, value, OP_GREATER_OR_EQUAL);
+		return new Filter(property, value, OP_GREATER_OR_EQUAL);
 	}
 
 	/**
@@ -174,13 +168,12 @@ public class Filter implements Serializable {
 	 * specified.
 	 */
 	public static Filter in(String property, Collection<?> value) throws UnsupportedDataTypeException {
-        for(Object v : value) {
-            if(v instanceof LocalDateTime)  {
-                throw new UnsupportedDataTypeException();
-            }
-        }
-
-        return new Filter(property, value, OP_IN);
+		for(Object v : value) {
+			if(v instanceof LocalDateTime)  {
+				throw new UnsupportedDataTypeException();
+			}
+		}
+		return new Filter(property, value, OP_IN);
 	}
 
 	/**
@@ -191,12 +184,12 @@ public class Filter implements Serializable {
 	 * specified.
 	 */
 	public static Filter in(String property, Object... value) throws UnsupportedDataTypeException {
-        for(Object v : value) {
-            if(v instanceof LocalDateTime)  {
-                throw new UnsupportedDataTypeException();
-            }
-        }
-        return new Filter(property, value, OP_IN);
+		for(Object v : value) {
+			if(v instanceof LocalDateTime)  {
+				throw new UnsupportedDataTypeException();
+			}
+		}
+		return new Filter(property, value, OP_IN);
 	}
 
 	/**
@@ -207,13 +200,12 @@ public class Filter implements Serializable {
 	 * specified.
 	 */
 	public static Filter notIn(String property, Collection<?> value) throws UnsupportedDataTypeException {
-        for(Object v : value) {
-            if(v instanceof LocalDateTime)  {
-                throw new UnsupportedDataTypeException();
-            }
-        }
-
-        return new Filter(property, value, OP_NOT_IN);
+		for(Object v : value) {
+			if(v instanceof LocalDateTime)  {
+				throw new UnsupportedDataTypeException();
+			}
+		}
+		return new Filter(property, value, OP_NOT_IN);
 	}
 
 	/**
@@ -224,35 +216,38 @@ public class Filter implements Serializable {
 	 * specified.
 	 */
 	public static Filter notIn(String property, Object... value) throws UnsupportedDataTypeException {
-        for(Object v : value) {
-            if(v instanceof LocalDateTime)  {
-                throw new UnsupportedDataTypeException();
-            }
-        }
-
-        return new Filter(property, value, OP_NOT_IN);
+		for(Object v : value) {
+			if(v instanceof LocalDateTime)  {
+				throw new UnsupportedDataTypeException();
+			}
+		}
+		return new Filter(property, value, OP_NOT_IN);
 	}
 
 	/**
 	 * Create a new Filter using the LIKE operator.
 	 */
-	public static Filter like(String property, String value) throws UnsupportedDataTypeException {
+	public static Filter like(String property, String value) {
 		return new Filter(property, value, OP_LIKE);
 	}
 
 	/**
 	 * Create a new Filter using the ILIKE operator.
 	 */
-	public static Filter ilike(String property, String value) throws UnsupportedDataTypeException {
+	public static Filter ilike(String property, String value) {
 		return new Filter(property, value, OP_ILIKE);
 	}
 
 	/**
 	 * Create a new Filter using the != operator.
 	 */
-	public static Filter notEqual(String property, Object value) throws UnsupportedDataTypeException {
+	public static Filter notEqual(String property, Object value) {
 		return new Filter(property, value, OP_NOT_EQUAL);
 	}
+
+
+
+
 
 	/**
 	 * Create a new Filter using the == operator.
@@ -264,11 +259,7 @@ public class Filter implements Serializable {
 					.toLocalDateTime();
 		}
 
-        Filter f = new Filter();
-		f.setProperty(property);
-		f.setValue(value);
-		f.setOperator(OP_EQUAL);
-		return f;
+		return new Filter(property, value, OP_EQUAL);
 	}
 
 	/**
@@ -281,11 +272,7 @@ public class Filter implements Serializable {
 					.toLocalDateTime();
 		}
 
-        Filter f = new Filter();
-        f.setProperty(property);
-        f.setValue(value);
-        f.setOperator(OP_LESS_THAN);
-        return f;
+		return new Filter(property, value, OP_LESS_THAN);
 	}
 
 	/**
@@ -298,11 +285,7 @@ public class Filter implements Serializable {
 					.toLocalDateTime();
 		}
 
-        Filter f = new Filter();
-        f.setProperty(property);
-        f.setValue(value);
-        f.setOperator(OP_GREATER_THAN);
-        return f;
+		return new Filter(property, value, OP_GREATER_THAN);
 	}
 
 	/**
@@ -315,11 +298,7 @@ public class Filter implements Serializable {
 					.toLocalDateTime();
 		}
 
-        Filter f = new Filter();
-        f.setProperty(property);
-        f.setValue(value);
-        f.setOperator(OP_LESS_OR_EQUAL);
-        return f;
+		return new Filter(property, value, OP_LESS_OR_EQUAL);
 	}
 
 	/**
@@ -332,11 +311,7 @@ public class Filter implements Serializable {
 					.toLocalDateTime();
 		}
 
-        Filter f = new Filter();
-        f.setProperty(property);
-        f.setValue(value);
-        f.setOperator(OP_GREATER_OR_EQUAL);
-        return f;
+		return new Filter(property, value, OP_GREATER_OR_EQUAL);
 	}
 
 	/**
@@ -354,12 +329,7 @@ public class Filter implements Serializable {
 						.toLocalDateTime();
 			}
 		}
-
-        Filter f = new Filter();
-        f.setProperty(property);
-        f.setValue(value);
-        f.setOperator(OP_IN);
-        return f;
+		return new Filter(property, value, OP_IN);
 	}
 
 	/**
@@ -377,12 +347,7 @@ public class Filter implements Serializable {
 						.toLocalDateTime();
 			}
 		}
-
-        Filter f = new Filter();
-        f.setProperty(property);
-        f.setValue(value);
-        f.setOperator(OP_IN);
-        return f;
+		return new Filter(property, value, OP_IN);
 	}
 
 	/**
@@ -400,12 +365,7 @@ public class Filter implements Serializable {
 						.toLocalDateTime();
 			}
 		}
-
-        Filter f = new Filter();
-        f.setProperty(property);
-        f.setValue(value);
-        f.setOperator(OP_NOT_IN);
-        return f;
+		return new Filter(property, value, OP_NOT_IN);
 	}
 
 	/**
@@ -423,12 +383,7 @@ public class Filter implements Serializable {
 						.toLocalDateTime();
 			}
 		}
-
-        Filter f = new Filter();
-        f.setProperty(property);
-        f.setValue(value);
-        f.setOperator(OP_NOT_IN);
-        return f;
+		return new Filter(property, value, OP_NOT_IN);
 	}
 
 	/**
@@ -441,39 +396,35 @@ public class Filter implements Serializable {
 					.toLocalDateTime();
 		}
 
-        Filter f = new Filter();
-        f.setProperty(property);
-        f.setValue(value);
-        f.setOperator(OP_NOT_EQUAL);
-        return f;
+		return new Filter(property, value, OP_NOT_EQUAL);
 	}
 
 
 	/**
 	 * Create a new Filter using the IS NULL operator.
 	 */
-	public static Filter isNull(String property) throws UnsupportedDataTypeException {
+	public static Filter isNull(String property) {
 		return new Filter(property, true, OP_NULL);
 	}
 
 	/**
 	 * Create a new Filter using the IS NOT NULL operator.
 	 */
-	public static Filter isNotNull(String property) throws UnsupportedDataTypeException {
+	public static Filter isNotNull(String property) {
 		return new Filter(property, true, OP_NOT_NULL);
 	}
 
 	/**
 	 * Create a new Filter using the IS EMPTY operator.
 	 */
-	public static Filter isEmpty(String property) throws UnsupportedDataTypeException {
+	public static Filter isEmpty(String property) {
 		return new Filter(property, true, OP_EMPTY);
 	}
 
 	/**
 	 * Create a new Filter using the IS NOT EMPTY operator.
 	 */
-	public static Filter isNotEmpty(String property) throws UnsupportedDataTypeException {
+	public static Filter isNotEmpty(String property) {
 		return new Filter(property, true, OP_NOT_EMPTY);
 	}
 
@@ -484,7 +435,7 @@ public class Filter implements Serializable {
 	 * This takes a variable number of parameters. Any number of
 	 * <code>Filter</code>s can be specified.
 	 */
-	public static Filter and(Filter... filters) throws UnsupportedDataTypeException {
+	public static Filter and(Filter... filters) {
 		Filter filter = new Filter("AND", null, OP_AND);
 		for (Filter f : filters) {
 			filter.add(f);
@@ -499,7 +450,7 @@ public class Filter implements Serializable {
 	 * This takes a variable number of parameters. Any number of
 	 * <code>Filter</code>s can be specified.
 	 */
-	public static Filter or(Filter... filters) throws UnsupportedDataTypeException {
+	public static Filter or(Filter... filters) {
 		Filter filter = and(filters);
 		filter.property = "OR";
 		filter.operator = OP_OR;
@@ -509,21 +460,21 @@ public class Filter implements Serializable {
 	/**
 	 * Create a new Filter using the NOT operator.
 	 */
-	public static Filter not(Filter filter) throws UnsupportedDataTypeException {
+	public static Filter not(Filter filter) {
 		return new Filter("NOT", filter, OP_NOT);
 	}
 
 	/**
 	 * Create a new Filter using the SOME operator.
 	 */
-	public static Filter some(String property, Filter filter) throws UnsupportedDataTypeException {
+	public static Filter some(String property, Filter filter) {
 		return new Filter(property, filter, OP_SOME);
 	}
 
 	/**
 	 * Create a new Filter using the ALL operator.
 	 */
-	public static Filter all(String property, Filter filter) throws UnsupportedDataTypeException {
+	public static Filter all(String property, Filter filter) {
 		return new Filter(property, filter, OP_ALL);
 	}
 
@@ -531,7 +482,7 @@ public class Filter implements Serializable {
 	 * Create a new Filter using the NONE operator. This is equivalent to NOT
 	 * SOME.
 	 */
-	public static Filter none(String property, Filter filter) throws UnsupportedDataTypeException {
+	public static Filter none(String property, Filter filter) {
 		return new Filter(property, filter, OP_NONE);
 	}
 	
@@ -556,7 +507,7 @@ public class Filter implements Serializable {
 	 * 
 	 * @param expression JPQL/HQL where-clause expression
 	 */
-	public static Filter custom(String expression) throws UnsupportedDataTypeException {
+	public static Filter custom(String expression) {
 		return new Filter(expression, null, OP_CUSTOM);
 	}
 	
@@ -586,7 +537,7 @@ public class Filter implements Serializable {
 	 * @param values one or more values to fill in the numbered placeholders in
 	 * 		  the expression
 	 */
-	public static Filter custom(String expression, Object... values) throws UnsupportedDataTypeException {
+	public static Filter custom(String expression, Object... values) {
 		return new Filter(expression, values, OP_CUSTOM);
 	}
 
@@ -616,7 +567,7 @@ public class Filter implements Serializable {
 	 * @param values one or more values to fill in the numbered placeholders in
 	 * 		  the expression
 	 */
-	public static Filter custom(String expression, Collection<?> values) throws UnsupportedDataTypeException {
+	public static Filter custom(String expression, Collection<?> values) {
 		return new Filter(expression, values, OP_CUSTOM);
 	}
 
