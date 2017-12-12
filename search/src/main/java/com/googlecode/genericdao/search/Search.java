@@ -15,6 +15,8 @@
 package com.googlecode.genericdao.search;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -179,6 +181,159 @@ public class Search implements IMutableSearch, Serializable {
 	 * Add a filter that uses the != operator.
 	 */
 	public Search addFilterNotEqual(String property, Object value) {
+		SearchUtil.addFilterNotEqual(this, property, value);
+		return this;
+	}
+
+	/**
+	 * Add a filter that uses the == operator.
+	 */
+	public Search addFilterEqual(String property, Object value, ZoneId zoneId) {
+		if(value instanceof LocalDateTime) {
+			value = ((LocalDateTime) value).atZone(zoneId)
+					.withZoneSameInstant(ZoneId.of("UTC"))
+					.toLocalDateTime();
+		}
+
+		SearchUtil.addFilterEqual(this, property, value);
+		return this;
+	}
+
+	/**
+	 * Add a filter that uses the >= operator.
+	 */
+	public Search addFilterGreaterOrEqual(String property, Object value, ZoneId zoneId) {
+		if(value instanceof LocalDateTime) {
+			value = ((LocalDateTime) value).atZone(zoneId)
+					.withZoneSameInstant(ZoneId.of("UTC"))
+					.toLocalDateTime();
+		}
+
+		SearchUtil.addFilterGreaterOrEqual(this, property, value);
+		return this;
+	}
+
+	/**
+	 * Add a filter that uses the > operator.
+	 */
+	public Search addFilterGreaterThan(String property, Object value, ZoneId zoneId) {
+		if(value instanceof LocalDateTime) {
+			value = ((LocalDateTime) value).atZone(zoneId)
+					.withZoneSameInstant(ZoneId.of("UTC"))
+					.toLocalDateTime();
+		}
+
+		SearchUtil.addFilterGreaterThan(this, property, value);
+		return this;
+	}
+
+	/**
+	 * Add a filter that uses the IN operator.
+	 */
+	public Search addFilterIn(String property, Collection<?> value, ZoneId zoneId) {
+		for(Object v : value){
+			if(v instanceof LocalDateTime) {
+				v = ((LocalDateTime) v).atZone(zoneId)
+						.withZoneSameInstant(ZoneId.of("UTC"))
+						.toLocalDateTime();
+			}
+		}
+		SearchUtil.addFilterIn(this, property, value);
+		return this;
+	}
+
+	/**
+	 * Add a filter that uses the IN operator.
+	 *
+	 * <p>
+	 * This takes a variable number of parameters. Any number of values can be
+	 * specified.
+	 */
+	public Search addFilterIn(String property, ZoneId zoneId, Object... value) {
+		for(Object v : value){
+			if(v instanceof LocalDateTime) {
+				v = ((LocalDateTime) v).atZone(zoneId)
+						.withZoneSameInstant(ZoneId.of("UTC"))
+						.toLocalDateTime();
+			}
+		}
+
+		SearchUtil.addFilterIn(this, property, value, zoneId);
+		return this;
+	}
+
+	/**
+	 * Add a filter that uses the NOT IN operator.
+	 */
+	public Search addFilterNotIn(String property, Collection<?> value, ZoneId zoneId) {
+		for(Object v : value){
+			if(v instanceof LocalDateTime) {
+				v = ((LocalDateTime) v).atZone(zoneId)
+						.withZoneSameInstant(ZoneId.of("UTC"))
+						.toLocalDateTime();
+			}
+		}
+		SearchUtil.addFilterNotIn(this, property, value, zoneId);
+		return this;
+	}
+
+	/**
+	 * Add a filter that uses the NOT IN operator.
+	 *
+	 * <p>
+	 * This takes a variable number of parameters. Any number of values can be
+	 * specified.
+	 */
+	public Search addFilterNotIn(String property, ZoneId zoneId, Object... value) {
+		for(Object v : value){
+			if(v instanceof LocalDateTime) {
+				v = ((LocalDateTime) v).atZone(zoneId)
+						.withZoneSameInstant(ZoneId.of("UTC"))
+						.toLocalDateTime();
+			}
+		}
+		SearchUtil.addFilterNotIn(this, property, value, zoneId);
+		return this;
+	}
+
+	/**
+	 * Add a filter that uses the <= operator.
+	 */
+	public Search addFilterLessOrEqual(String property, Object value, ZoneId zoneId) {
+		if(value instanceof LocalDateTime) {
+			value = ((LocalDateTime) value).atZone(zoneId)
+					.withZoneSameInstant(ZoneId.of("UTC"))
+					.toLocalDateTime();
+		}
+
+		SearchUtil.addFilterLessOrEqual(this, property, value);
+		return this;
+	}
+
+	/**
+	 * Add a filter that uses the < operator.
+	 */
+	public Search addFilterLessThan(String property, Object value, ZoneId zoneId) {
+		if(value instanceof LocalDateTime) {
+			value = ((LocalDateTime) value).atZone(zoneId)
+					.withZoneSameInstant(ZoneId.of("UTC"))
+					.toLocalDateTime();
+		}
+
+		SearchUtil.addFilterLessThan(this, property, value);
+		return this;
+	}
+
+	/**
+	 * Add a filter that uses the != operator.
+	 */
+	public Search addFilterNotEqual(String property, Object value, ZoneId zoneId) {
+		if(value instanceof LocalDateTime) {
+			value = ((LocalDateTime) value).atZone(zoneId)
+					.withZoneSameInstant(ZoneId.of("UTC"))
+					.toLocalDateTime();
+		}
+
 		SearchUtil.addFilterNotEqual(this, property, value);
 		return this;
 	}
