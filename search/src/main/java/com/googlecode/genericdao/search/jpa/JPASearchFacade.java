@@ -16,6 +16,7 @@ package com.googlecode.genericdao.search.jpa;
 
 import java.util.List;
 
+import javax.activation.UnsupportedDataTypeException;
 import javax.persistence.EntityManager;
 
 import com.googlecode.genericdao.search.ExampleOptions;
@@ -89,11 +90,11 @@ public class JPASearchFacade implements SearchFacade {
 		return processor.searchUnique(entityManager, searchClass, search);
 	}
 
-	public Filter getFilterFromExample(Object example) {
+	public Filter getFilterFromExample(Object example) throws UnsupportedDataTypeException {
 		return processor.getFilterFromExample(example);
 	}
 
-	public Filter getFilterFromExample(Object example, ExampleOptions options) {
+	public Filter getFilterFromExample(Object example, ExampleOptions options) throws UnsupportedDataTypeException {
 		return processor.getFilterFromExample(example, options);
 	}
 }

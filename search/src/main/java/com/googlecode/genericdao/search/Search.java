@@ -14,6 +14,7 @@
  */
 package com.googlecode.genericdao.search;
 
+import javax.activation.UnsupportedDataTypeException;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -84,7 +85,10 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the == operator.
 	 */
-	public Search addFilterEqual(String property, Object value) {
+	public Search addFilterEqual(String property, Object value) throws UnsupportedDataTypeException {
+		if(value instanceof LocalDateTime) {
+			throw new UnsupportedDataTypeException();
+		}
 		SearchUtil.addFilterEqual(this, property, value);
 		return this;
 	}
@@ -92,7 +96,10 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the >= operator.
 	 */
-	public Search addFilterGreaterOrEqual(String property, Object value) {
+	public Search addFilterGreaterOrEqual(String property, Object value) throws UnsupportedDataTypeException {
+		if(value instanceof LocalDateTime) {
+			throw new UnsupportedDataTypeException();
+		}
 		SearchUtil.addFilterGreaterOrEqual(this, property, value);
 		return this;
 	}
@@ -100,7 +107,10 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the > operator.
 	 */
-	public Search addFilterGreaterThan(String property, Object value) {
+	public Search addFilterGreaterThan(String property, Object value) throws UnsupportedDataTypeException {
+		if(value instanceof LocalDateTime) {
+			throw new UnsupportedDataTypeException();
+		}
 		SearchUtil.addFilterGreaterThan(this, property, value);
 		return this;
 	}
@@ -108,7 +118,12 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the IN operator.
 	 */
-	public Search addFilterIn(String property, Collection<?> value) {
+	public Search addFilterIn(String property, Collection<?> value) throws UnsupportedDataTypeException {
+		for(Object v : value) {
+			if(v instanceof LocalDateTime)  {
+				throw new UnsupportedDataTypeException();
+			}
+		}
 		SearchUtil.addFilterIn(this, property, value);
 		return this;
 	}
@@ -120,7 +135,12 @@ public class Search implements IMutableSearch, Serializable {
 	 * This takes a variable number of parameters. Any number of values can be
 	 * specified.
 	 */
-	public Search addFilterIn(String property, Object... value) {
+	public Search addFilterIn(String property, Object... value) throws UnsupportedDataTypeException {
+		for(Object v : value) {
+			if(v instanceof LocalDateTime)  {
+				throw new UnsupportedDataTypeException();
+			}
+		}
 		SearchUtil.addFilterIn(this, property, value);
 		return this;
 	}
@@ -128,7 +148,12 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the NOT IN operator.
 	 */
-	public Search addFilterNotIn(String property, Collection<?> value) {
+	public Search addFilterNotIn(String property, Collection<?> value) throws UnsupportedDataTypeException {
+		for(Object v : value) {
+			if(v instanceof LocalDateTime)  {
+				throw new UnsupportedDataTypeException();
+			}
+		}
 		SearchUtil.addFilterNotIn(this, property, value);
 		return this;
 	}
@@ -140,7 +165,12 @@ public class Search implements IMutableSearch, Serializable {
 	 * This takes a variable number of parameters. Any number of values can be
 	 * specified.
 	 */
-	public Search addFilterNotIn(String property, Object... value) {
+	public Search addFilterNotIn(String property, Object... value) throws UnsupportedDataTypeException {
+		for(Object v : value) {
+			if(v instanceof LocalDateTime)  {
+				throw new UnsupportedDataTypeException();
+			}
+		}
 		SearchUtil.addFilterNotIn(this, property, value);
 		return this;
 	}
@@ -148,7 +178,10 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the <= operator.
 	 */
-	public Search addFilterLessOrEqual(String property, Object value) {
+	public Search addFilterLessOrEqual(String property, Object value) throws UnsupportedDataTypeException {
+		if(value instanceof LocalDateTime)  {
+			throw new UnsupportedDataTypeException();
+		}
 		SearchUtil.addFilterLessOrEqual(this, property, value);
 		return this;
 	}
@@ -156,7 +189,10 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the < operator.
 	 */
-	public Search addFilterLessThan(String property, Object value) {
+	public Search addFilterLessThan(String property, Object value) throws UnsupportedDataTypeException {
+		if(value instanceof LocalDateTime)  {
+			throw new UnsupportedDataTypeException();
+		}
 		SearchUtil.addFilterLessThan(this, property, value);
 		return this;
 	}
@@ -188,7 +224,7 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the == operator.
 	 */
-	public Search addFilterEqual(String property, Object value, ZoneId zoneId) {
+	public Search addFilterEqual(String property, Object value, ZoneId zoneId) throws UnsupportedDataTypeException {
 		if(value instanceof LocalDateTime) {
 			value = ((LocalDateTime) value).atZone(zoneId)
 					.withZoneSameInstant(ZoneId.of("UTC"))
@@ -202,7 +238,7 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the >= operator.
 	 */
-	public Search addFilterGreaterOrEqual(String property, Object value, ZoneId zoneId) {
+	public Search addFilterGreaterOrEqual(String property, Object value, ZoneId zoneId) throws UnsupportedDataTypeException {
 		if(value instanceof LocalDateTime) {
 			value = ((LocalDateTime) value).atZone(zoneId)
 					.withZoneSameInstant(ZoneId.of("UTC"))
@@ -216,7 +252,7 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the > operator.
 	 */
-	public Search addFilterGreaterThan(String property, Object value, ZoneId zoneId) {
+	public Search addFilterGreaterThan(String property, Object value, ZoneId zoneId) throws UnsupportedDataTypeException {
 		if(value instanceof LocalDateTime) {
 			value = ((LocalDateTime) value).atZone(zoneId)
 					.withZoneSameInstant(ZoneId.of("UTC"))
@@ -230,7 +266,7 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the IN operator.
 	 */
-	public Search addFilterIn(String property, Collection<?> value, ZoneId zoneId) {
+	public Search addFilterIn(String property, Collection<?> value, ZoneId zoneId) throws UnsupportedDataTypeException {
 		for(Object v : value){
 			if(v instanceof LocalDateTime) {
 				v = ((LocalDateTime) v).atZone(zoneId)
@@ -249,7 +285,7 @@ public class Search implements IMutableSearch, Serializable {
 	 * This takes a variable number of parameters. Any number of values can be
 	 * specified.
 	 */
-	public Search addFilterIn(String property, ZoneId zoneId, Object... value) {
+	public Search addFilterIn(String property, ZoneId zoneId, Object... value) throws UnsupportedDataTypeException {
 		for(Object v : value){
 			if(v instanceof LocalDateTime) {
 				v = ((LocalDateTime) v).atZone(zoneId)
@@ -265,7 +301,7 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the NOT IN operator.
 	 */
-	public Search addFilterNotIn(String property, Collection<?> value, ZoneId zoneId) {
+	public Search addFilterNotIn(String property, Collection<?> value, ZoneId zoneId) throws UnsupportedDataTypeException {
 		for(Object v : value){
 			if(v instanceof LocalDateTime) {
 				v = ((LocalDateTime) v).atZone(zoneId)
@@ -284,7 +320,7 @@ public class Search implements IMutableSearch, Serializable {
 	 * This takes a variable number of parameters. Any number of values can be
 	 * specified.
 	 */
-	public Search addFilterNotIn(String property, ZoneId zoneId, Object... value) {
+	public Search addFilterNotIn(String property, ZoneId zoneId, Object... value) throws UnsupportedDataTypeException {
 		for(Object v : value){
 			if(v instanceof LocalDateTime) {
 				v = ((LocalDateTime) v).atZone(zoneId)
@@ -299,7 +335,7 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the <= operator.
 	 */
-	public Search addFilterLessOrEqual(String property, Object value, ZoneId zoneId) {
+	public Search addFilterLessOrEqual(String property, Object value, ZoneId zoneId) throws UnsupportedDataTypeException {
 		if(value instanceof LocalDateTime) {
 			value = ((LocalDateTime) value).atZone(zoneId)
 					.withZoneSameInstant(ZoneId.of("UTC"))
@@ -313,7 +349,7 @@ public class Search implements IMutableSearch, Serializable {
 	/**
 	 * Add a filter that uses the < operator.
 	 */
-	public Search addFilterLessThan(String property, Object value, ZoneId zoneId) {
+	public Search addFilterLessThan(String property, Object value, ZoneId zoneId) throws UnsupportedDataTypeException {
 		if(value instanceof LocalDateTime) {
 			value = ((LocalDateTime) value).atZone(zoneId)
 					.withZoneSameInstant(ZoneId.of("UTC"))

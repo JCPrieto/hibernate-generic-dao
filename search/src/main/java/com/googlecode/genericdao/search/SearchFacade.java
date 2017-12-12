@@ -14,6 +14,7 @@
  */
 package com.googlecode.genericdao.search;
 
+import javax.activation.UnsupportedDataTypeException;
 import java.util.List;
 
 /**
@@ -95,11 +96,11 @@ public interface SearchFacade {
 	/**
 	 * Generates a search filter from the given example using default options. 
 	 */
-	public Filter getFilterFromExample(Object example);
+	public Filter getFilterFromExample(Object example) throws UnsupportedDataTypeException;
 
 	/**
 	 * Generates a search filter from the given example using the specified options. 
 	 */
-	public Filter getFilterFromExample(Object example, ExampleOptions options);
+	public Filter getFilterFromExample(Object example, ExampleOptions options) throws UnsupportedDataTypeException;
 
 }
