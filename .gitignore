@@ -94,7 +94,7 @@ search-jpa-hibernate/search-jpa-hibernate.iml
 search-jpa-hibernate/src/main/resources/
 search/search.iml
 search/src/main/resources/
-test-base/test-base.iml
 test-search/src/main/java/test/googlecode/genericdao/search/jpa/
 test-search/src/main/resources/
-test-search/test-search.iml
+test-base/
+test-search/
