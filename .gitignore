@@ -98,3 +98,10 @@ test-search/src/main/java/test/googlecode/genericdao/search/jpa/
 test-search/src/main/resources/
 test-base/
 test-search/
+dao-hibernate/src/main/main2.iml
+dao/src/main/main3.iml
+sample/hibernate-maven-web/src/main/main.iml
+sample/jpa-hibernate-maven/src/main/main1.iml
+search-hibernate/src/main/main5.iml
+search-jpa-hibernate/src/main/main4.iml
+search/src/main/main6.iml
