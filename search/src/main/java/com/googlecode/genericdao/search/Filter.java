@@ -16,6 +16,8 @@ package com.googlecode.genericdao.search;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -80,6 +82,28 @@ public class Filter implements Serializable {
 		this.operator = OP_EQUAL;
 	}
 
+	public Filter(String property, Object value, int operator, ZoneId zoneId) {
+		this.property = property;
+		if(value instanceof LocalDateTime) {
+			value = ((LocalDateTime) value).atZone(zoneId)
+					.withZoneSameInstant(ZoneId.of("UTC"))
+					.toLocalDateTime();
+		} else {
+			this.value = value;
+		}
+		this.operator = operator;
+	}
+
+	public Filter(String property, Object value, ZoneId zoneId) {
+		this.property = property;
+		if(value instanceof LocalDateTime) {
+
+		} else {
+			this.value = value;
+		}
+		this.operator = OP_EQUAL;
+	}
+
 	public static final int OP_EQUAL = 0;
 	public static final int OP_NOT_EQUAL = 1;
 	public static final int OP_LESS_THAN = 2;
@@ -139,7 +163,7 @@ public class Filter implements Serializable {
 
 	/**
 	 * Create a new Filter using the IN operator.
-	 * 
+	 *
 	 * <p>
 	 * This takes a variable number of parameters. Any number of values can be
 	 * specified.
@@ -150,7 +174,7 @@ public class Filter implements Serializable {
 
 	/**
 	 * Create a new Filter using the IN operator.
-	 * 
+	 *
 	 * <p>
 	 * This takes a variable number of parameters. Any number of values can be
 	 * specified.
@@ -161,7 +185,7 @@ public class Filter implements Serializable {
 
 	/**
 	 * Create a new Filter using the NOT IN operator.
-	 * 
+	 *
 	 * <p>
 	 * This takes a variable number of parameters. Any number of values can be
 	 * specified.
@@ -172,7 +196,7 @@ public class Filter implements Serializable {
 
 	/**
 	 * Create a new Filter using the NOT IN operator.
-	 * 
+	 *
 	 * <p>
 	 * This takes a variable number of parameters. Any number of values can be
 	 * specified.
@@ -201,6 +225,161 @@ public class Filter implements Serializable {
 	public static Filter notEqual(String property, Object value) {
 		return new Filter(property, value, OP_NOT_EQUAL);
 	}
+
+
+
+
+
+	/**
+	 * Create a new Filter using the == operator.
+	 */
+	public static Filter equal(String property, Object value, ZoneId zoneId) {
+		if(value instanceof LocalDateTime) {
+			value = ((LocalDateTime) value).atZone(zoneId)
+					.withZoneSameInstant(ZoneId.of("UTC"))
+					.toLocalDateTime();
+		}
+
+		return new Filter(property, value, OP_EQUAL);
+	}
+
+	/**
+	 * Create a new Filter using the < operator.
+	 */
+	public static Filter lessThan(String property, Object value, ZoneId zoneId) {
+		if(value instanceof LocalDateTime) {
+			value = ((LocalDateTime) value).atZone(zoneId)
+					.withZoneSameInstant(ZoneId.of("UTC"))
+					.toLocalDateTime();
+		}
+
+		return new Filter(property, value, OP_LESS_THAN);
+	}
+
+	/**
+	 * Create a new Filter using the > operator.
+	 */
+	public static Filter greaterThan(String property, Object value, ZoneId zoneId) {
+		if(value instanceof LocalDateTime) {
+			value = ((LocalDateTime) value).atZone(zoneId)
+					.withZoneSameInstant(ZoneId.of("UTC"))
+					.toLocalDateTime();
+		}
+
+		return new Filter(property, value, OP_GREATER_THAN);
+	}
+
+	/**
+	 * Create a new Filter using the <= operator.
+	 */
+	public static Filter lessOrEqual(String property, Object value, ZoneId zoneId) {
+		if(value instanceof LocalDateTime) {
+			value = ((LocalDateTime) value).atZone(zoneId)
+					.withZoneSameInstant(ZoneId.of("UTC"))
+					.toLocalDateTime();
+		}
+
+		return new Filter(property, value, OP_LESS_OR_EQUAL);
+	}
+
+	/**
+	 * Create a new Filter using the >= operator.
+	 */
+	public static Filter greaterOrEqual(String property, Object value, ZoneId zoneId) {
+		if(value instanceof LocalDateTime) {
+			value = ((LocalDateTime) value).atZone(zoneId)
+					.withZoneSameInstant(ZoneId.of("UTC"))
+					.toLocalDateTime();
+		}
+
+		return new Filter(property, value, OP_GREATER_OR_EQUAL);
+	}
+
+	/**
+	 * Create a new Filter using the IN operator.
+	 *
+	 * <p>
+	 * This takes a variable number of parameters. Any number of values can be
+	 * specified.
+	 */
+	public static Filter in(String property, Collection<?> value, ZoneId zoneId) {
+		for(Object v : value){
+			if(v instanceof LocalDateTime) {
+				v = ((LocalDateTime) v).atZone(zoneId)
+						.withZoneSameInstant(ZoneId.of("UTC"))
+						.toLocalDateTime();
+			}
+		}
+		return new Filter(property, value, OP_IN);
+	}
+
+	/**
+	 * Create a new Filter using the IN operator.
+	 *
+	 * <p>
+	 * This takes a variable number of parameters. Any number of values can be
+	 * specified.
+	 */
+	public static Filter in(String property, ZoneId zoneId, Object... value) {
+		for(Object v : value){
+			if(v instanceof LocalDateTime) {
+				v = ((LocalDateTime) v).atZone(zoneId)
+						.withZoneSameInstant(ZoneId.of("UTC"))
+						.toLocalDateTime();
+			}
+		}
+		return new Filter(property, value, OP_IN);
+	}
+
+	/**
+	 * Create a new Filter using the NOT IN operator.
+	 *
+	 * <p>
+	 * This takes a variable number of parameters. Any number of values can be
+	 * specified.
+	 */
+	public static Filter notIn(String property, Collection<?> value, ZoneId zoneId) {
+		for(Object v : value){
+			if(v instanceof LocalDateTime) {
+				v = ((LocalDateTime) v).atZone(zoneId)
+						.withZoneSameInstant(ZoneId.of("UTC"))
+						.toLocalDateTime();
+			}
+		}
+		return new Filter(property, value, OP_NOT_IN);
+	}
+
+	/**
+	 * Create a new Filter using the NOT IN operator.
+	 *
+	 * <p>
+	 * This takes a variable number of parameters. Any number of values can be
+	 * specified.
+	 */
+	public static Filter notIn(String property, ZoneId zoneId, Object... value) {
+		for(Object v : value){
+			if(v instanceof LocalDateTime) {
+				v = ((LocalDateTime) v).atZone(zoneId)
+						.withZoneSameInstant(ZoneId.of("UTC"))
+						.toLocalDateTime();
+			}
+		}
+		return new Filter(property, value, OP_NOT_IN);
+	}
+
+	/**
+	 * Create a new Filter using the != operator.
+	 */
+	public static Filter notEqual(String property, Object value, ZoneId zoneId) {
+		if(value instanceof LocalDateTime) {
+			value = ((LocalDateTime) value).atZone(zoneId)
+					.withZoneSameInstant(ZoneId.of("UTC"))
+					.toLocalDateTime();
+		}
+
+		return new Filter(property, value, OP_NOT_EQUAL);
+	}
+
 
 	/**
 	 * Create a new Filter using the IS NULL operator.
