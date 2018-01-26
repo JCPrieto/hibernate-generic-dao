@@ -22,6 +22,8 @@ import com.googlecode.genericdao.search.Filter;
 import com.googlecode.genericdao.search.ISearch;
 import com.googlecode.genericdao.search.SearchResult;
 
+import javax.activation.UnsupportedDataTypeException;
+
 /**
  * Interface for general Data Access Object that can be used for any type domain
  * object. A single instance implementing this interface can be used for
@@ -189,11 +191,11 @@ public interface GeneralDAO {
 	/**
 	 * Generates a search filter from the given example using default options. 
 	 */
-	public Filter getFilterFromExample(Object example);
+	public Filter getFilterFromExample(Object example) throws UnsupportedDataTypeException;
 	
 	/**
 	 * Generates a search filter from the given example using the specified options. 
 	 */
-	public Filter getFilterFromExample(Object example, ExampleOptions options);
+	public Filter getFilterFromExample(Object example, ExampleOptions options) throws UnsupportedDataTypeException;
 
 }

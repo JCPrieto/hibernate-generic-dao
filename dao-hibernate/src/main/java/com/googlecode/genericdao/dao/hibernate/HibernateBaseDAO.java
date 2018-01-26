@@ -35,6 +35,8 @@ import com.googlecode.genericdao.search.SearchResult;
 import com.googlecode.genericdao.search.hibernate.HibernateMetadataUtil;
 import com.googlecode.genericdao.search.hibernate.HibernateSearchProcessor;
 
+import javax.activation.UnsupportedDataTypeException;
+
 /**
  * Base class for DAOs that uses Hibernate SessionFactory and HQL for searches.
  * This is the heart of Hibernate Generic DAO.
@@ -678,11 +680,11 @@ public class HibernateBaseDAO {
 		return ret;
 	}
 	
-	protected Filter _getFilterFromExample(Object example) {
+	protected Filter _getFilterFromExample(Object example) throws UnsupportedDataTypeException {
 		return searchProcessor.getFilterFromExample(example);
 	}
 	
-	protected Filter _getFilterFromExample(Object example, ExampleOptions options) {
+	protected Filter _getFilterFromExample(Object example, ExampleOptions options) throws UnsupportedDataTypeException {
 		return searchProcessor.getFilterFromExample(example, options);
 	}
 }

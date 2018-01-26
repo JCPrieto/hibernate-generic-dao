@@ -15,6 +15,8 @@
 package com.googlecode.genericdao.search;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 /**
@@ -123,6 +125,12 @@ public class InternalUtil {
 			} catch (ClassNotFoundException e) {
 				throw new ClassCastException("Unable to convert value " + value.toString() + " to type Class");
 			}
+		}
+
+		if(type.equals(LocalDate.class) && value.getClass().equals(LocalDateTime.class)) {
+			return ((LocalDateTime) value).toLocalDate();
+		} else if(type.equals(LocalDateTime.class) && value.getClass().equals(LocalDate.class)) {
+			return ((LocalDate) value).atStartOfDay();
 		}
 
 		throw new ClassCastException("Unable to convert value of type " + value.getClass().getName() + " to type "

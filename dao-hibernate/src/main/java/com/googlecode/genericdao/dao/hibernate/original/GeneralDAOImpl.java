@@ -25,6 +25,8 @@ import com.googlecode.genericdao.search.Filter;
 import com.googlecode.genericdao.search.ISearch;
 import com.googlecode.genericdao.search.SearchResult;
 
+import javax.activation.UnsupportedDataTypeException;
+
 /**
  * Implementation of <code>GeneralDAO</code> using Hibernate.
  * The SessionFactory property is annotated for automatic resource injection.
@@ -97,11 +99,11 @@ public class GeneralDAOImpl extends HibernateBaseDAO implements GeneralDAO {
 		_refresh(object);
 	}
 	
-	public Filter getFilterFromExample(Object example) {
+	public Filter getFilterFromExample(Object example) throws UnsupportedDataTypeException {
 		return _getFilterFromExample(example);
 	}
 
-	public Filter getFilterFromExample(Object example, ExampleOptions options) {
+	public Filter getFilterFromExample(Object example, ExampleOptions options) throws UnsupportedDataTypeException {
 		return _getFilterFromExample(example, options);
 	}
 }

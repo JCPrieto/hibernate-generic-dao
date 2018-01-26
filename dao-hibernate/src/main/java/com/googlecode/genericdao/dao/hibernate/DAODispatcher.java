@@ -24,6 +24,8 @@ import com.googlecode.genericdao.search.Filter;
 import com.googlecode.genericdao.search.ISearch;
 import com.googlecode.genericdao.search.SearchResult;
 
+import javax.activation.UnsupportedDataTypeException;
+
 /**
  * <p>This is an implementation of GeneralDAO that delegates to other DAOs
  * depending on what entity class is being processed.
@@ -336,7 +338,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 		}
 	}
 	
-	public Filter getFilterFromExample(Object example) {
+	public Filter getFilterFromExample(Object example) throws UnsupportedDataTypeException {
 		Object specificDAO = getSpecificDAO(example.getClass().getName());
 		if (specificDAO != null) {
 			if (specificDAO instanceof GenericDAO) {
@@ -349,7 +351,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 		}
 	}
 	
-	public Filter getFilterFromExample(Object example, ExampleOptions options) {
+	public Filter getFilterFromExample(Object example, ExampleOptions options) throws UnsupportedDataTypeException {
 		Object specificDAO = getSpecificDAO(example.getClass().getName());
 		if (specificDAO != null) {
 			if (specificDAO instanceof GenericDAO) {
