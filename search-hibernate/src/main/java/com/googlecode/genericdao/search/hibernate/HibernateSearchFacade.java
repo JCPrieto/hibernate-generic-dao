@@ -25,6 +25,8 @@ import com.googlecode.genericdao.search.ISearch;
 import com.googlecode.genericdao.search.SearchFacade;
 import com.googlecode.genericdao.search.SearchResult;
 
+import javax.activation.UnsupportedDataTypeException;
+
 /**
  * <p>
  * Hibernate implementation of SearchFacade.
@@ -98,11 +100,11 @@ public class HibernateSearchFacade implements SearchFacade {
 		return processor.searchUnique(getSession(), searchClass, search);
 	}
 
-	public Filter getFilterFromExample(Object example) {
+	public Filter getFilterFromExample(Object example) throws UnsupportedDataTypeException {
 		return processor.getFilterFromExample(example);
 	}
 
-	public Filter getFilterFromExample(Object example, ExampleOptions options) {
+	public Filter getFilterFromExample(Object example, ExampleOptions options) throws UnsupportedDataTypeException {
 		return processor.getFilterFromExample(example, options);
 	}
 }
