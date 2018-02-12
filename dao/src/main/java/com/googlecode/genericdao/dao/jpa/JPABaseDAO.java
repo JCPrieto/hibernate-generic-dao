@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.activation.UnsupportedDataTypeException;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
@@ -495,11 +496,11 @@ public class JPABaseDAO {
 		return ret;
 	}
 
-	protected Filter _getFilterFromExample(Object example) {
+	protected Filter _getFilterFromExample(Object example) throws UnsupportedDataTypeException {
 		return searchProcessor.getFilterFromExample(example);
 	}
 
-	protected Filter _getFilterFromExample(Object example, ExampleOptions options) {
+	protected Filter _getFilterFromExample(Object example, ExampleOptions options) throws UnsupportedDataTypeException {
 		return searchProcessor.getFilterFromExample(example, options);
 	}
 
