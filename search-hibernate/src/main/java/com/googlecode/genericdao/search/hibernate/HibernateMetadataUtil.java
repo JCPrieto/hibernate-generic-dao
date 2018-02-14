@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javassist.util.proxy.ProxyFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.PropertyNotFoundException;
 import org.hibernate.SessionFactory;
@@ -123,7 +124,7 @@ public class HibernateMetadataUtil implements MetadataUtil {
 		//it is a Hibernate proxy class (e.x. test.googlecode.genericdao.model.Person_$$_javassist_5).
 		//So if a class is not recognized, we will look at superclasses to see if
 		//it is a proxy.
-		while (sessionFactory.getClassMetadata(klass) == null) {
+		while (ProxyFactory.isProxyClass(klass)) {
 			klass = klass.getSuperclass();
 			if (Object.class.equals(klass))
 				return null;
