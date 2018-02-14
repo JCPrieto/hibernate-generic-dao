@@ -249,7 +249,10 @@ public class Filter implements Serializable {
     /**
      * Create a new Filter using the != operator.
      */
-    public static Filter notEqual(String property, Object value) {
+    public static Filter notEqual(String property, Object value) throws UnsupportedDataTypeException {
+        if (value != null && value instanceof LocalDateTime) {
+            throw new UnsupportedDataTypeException();
+        }
         return new Filter(property, value, OP_NOT_EQUAL);
     }
 

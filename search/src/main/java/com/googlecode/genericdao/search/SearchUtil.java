@@ -296,8 +296,15 @@ public class SearchUtil {
     /**
      * Add a filter that uses the != operator.
      */
-    public static void addFilterNotEqual(IMutableSearch search, String property, Object value) {
+    public static void addFilterNotEqual(IMutableSearch search, String property, Object value) throws UnsupportedDataTypeException {
         addFilter(search, Filter.notEqual(property, value));
+    }
+
+    /**
+     * Add a filter that uses the != operator.
+     */
+    public static void addFilterNotEqual(IMutableSearch search, String property, Object value, ZoneId zoneId) {
+        addFilter(search, Filter.notEqual(property, value, zoneId));
     }
 
     /**

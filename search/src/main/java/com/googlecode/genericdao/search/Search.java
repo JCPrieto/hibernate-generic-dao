@@ -224,7 +224,7 @@ public class Search implements IMutableSearch, Serializable {
     /**
      * Add a filter that uses the != operator.
      */
-    public Search addFilterNotEqual(String property, Object value) {
+    public Search addFilterNotEqual(String property, Object value) throws UnsupportedDataTypeException {
         SearchUtil.addFilterNotEqual(this, property, value);
         return this;
     }
@@ -239,7 +239,7 @@ public class Search implements IMutableSearch, Serializable {
                     .toLocalDateTime();
         }
 
-        SearchUtil.addFilterEqual(this, property, value);
+        SearchUtil.addFilterEqual(this, property, value, zoneId);
         return this;
     }
 
@@ -253,7 +253,7 @@ public class Search implements IMutableSearch, Serializable {
                     .toLocalDateTime();
         }
 
-        SearchUtil.addFilterGreaterOrEqual(this, property, value);
+        SearchUtil.addFilterGreaterOrEqual(this, property, value, zoneId);
         return this;
     }
 
@@ -267,7 +267,7 @@ public class Search implements IMutableSearch, Serializable {
                     .toLocalDateTime();
         }
 
-        SearchUtil.addFilterGreaterThan(this, property, value);
+        SearchUtil.addFilterGreaterThan(this, property, value, zoneId);
         return this;
     }
 
@@ -284,7 +284,7 @@ public class Search implements IMutableSearch, Serializable {
                 }
             }
         }
-        SearchUtil.addFilterIn(this, property, value);
+        SearchUtil.addFilterIn(this, property, value, zoneId);
         return this;
     }
 
@@ -306,7 +306,7 @@ public class Search implements IMutableSearch, Serializable {
             }
         }
 
-        SearchUtil.addFilterIn(this, property, value, zoneId);
+        SearchUtil.addFilterIn(this, property, zoneId, value);
         return this;
     }
 
@@ -358,7 +358,7 @@ public class Search implements IMutableSearch, Serializable {
                     .toLocalDateTime();
         }
 
-        SearchUtil.addFilterLessOrEqual(this, property, value);
+        SearchUtil.addFilterLessOrEqual(this, property, value, zoneId);
         return this;
     }
 
@@ -372,7 +372,7 @@ public class Search implements IMutableSearch, Serializable {
                     .toLocalDateTime();
         }
 
-        SearchUtil.addFilterLessThan(this, property, value);
+        SearchUtil.addFilterLessThan(this, property, value, zoneId);
         return this;
     }
 
@@ -386,7 +386,7 @@ public class Search implements IMutableSearch, Serializable {
                     .toLocalDateTime();
         }
 
-        SearchUtil.addFilterNotEqual(this, property, value);
+        SearchUtil.addFilterNotEqual(this, property, value, zoneId);
         return this;
     }
 
