@@ -416,7 +416,9 @@ public abstract class BaseSearchProcessor {
 			} else {
 				sb.append(getPathRef(ctx, sort.getProperty()));
 			}
-			sb.append(sort.isDesc() ? " desc" : " asc");
+			if (sort.getDesc() != null) {
+				sb.append(sort.getDesc() ? " desc" : " asc");
+			}
 		}
 		if (first) {
 			return "";

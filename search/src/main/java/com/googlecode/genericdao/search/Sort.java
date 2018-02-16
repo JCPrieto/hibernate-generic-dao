@@ -26,7 +26,7 @@ public class Sort implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	protected String property;
-	protected boolean desc = false;
+	protected Boolean desc = false;
 	protected boolean ignoreCase = false;
 	protected boolean customExpression = false;
 
@@ -80,6 +80,7 @@ public class Sort implements Serializable {
 	public Sort(boolean isCustomExpression, String property) {
 		this.customExpression = isCustomExpression;
 		this.property = property;
+		this.desc = null;
 	}
 
 	public static Sort asc(String property) {
@@ -126,6 +127,10 @@ public class Sort implements Serializable {
 		return new Sort(true, expression, true);
 	}
 
+	public static Sort customExpression(String expression) {
+		return new Sort(true, expression);
+	}
+
 	/**
 	 * Property on which to sort
 	 */
@@ -144,7 +149,7 @@ public class Sort implements Serializable {
 	 * If true, sort descending by the given property; otherwise, sort
 	 * ascending.
 	 */
-	public boolean isDesc() {
+	public Boolean getDesc() {
 		return desc;
 	}
 
@@ -152,7 +157,7 @@ public class Sort implements Serializable {
 	 * If true, sort descending by the given property; otherwise, sort
 	 * ascending.
 	 */
-	public void setDesc(boolean desc) {
+	public void setDesc(Boolean desc) {
 		this.desc = desc;
 	}
 
