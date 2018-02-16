@@ -79,7 +79,6 @@ buildNumber.properties
 
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
-.gitignore
 .idea/
 dao-hibernate/dao-hibernate.iml
 dao-hibernate/src/main/resources/
