@@ -16,7 +16,7 @@ package com.googlecode.genericdao.search.hibernate;
 
 import com.googlecode.genericdao.search.*;
 import org.hibernate.NonUniqueResultException;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.transform.ResultTransformer;
