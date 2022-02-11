@@ -4,7 +4,7 @@
 	<groupId>es.jklabs.genericdao</groupId>
 	<artifactId>genericdao-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 
 	<name>Hibernate Generic DAO</name>
 

@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>dao</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<name>Hibernate Generic DAO - DAO</name>
 
 	<parent>
 		<artifactId>genericdao-parent</artifactId>
 		<groupId>es.jklabs.genericdao</groupId>
-		<version>1.0.1</version>
+		<version>1.0.2</version>
 	</parent>
 
 	<dependencies>
