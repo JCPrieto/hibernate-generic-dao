@@ -1,12 +1,29 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>es.jklabs.genericdao</groupId>
+	<groupId>io.github.jcprieto</groupId>
 	<artifactId>genericdao-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.2</version>
+	<version>2.0.0</version>
 
 	<name>Hibernate Generic DAO</name>
+	<description>Fork of Hibernate Generic DAO updated for Hibernate 5.</description>
+	<url>https://github.com/JCPrieto/hibernate-generic-dao</url>
+
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:git:https://github.com/JCPrieto/hibernate-generic-dao.git</connection>
+		<developerConnection>scm:git:https://github.com/JCPrieto/hibernate-generic-dao.git</developerConnection>
+		<url>https://github.com/JCPrieto/hibernate-generic-dao</url>
+		<tag>HEAD</tag>
+	</scm>
 
 	<modules>
 		<module>search</module>
@@ -21,6 +38,7 @@
 			<id>JCPrieto</id>
 			<name>Juan Carlos Prieto Silos</name>
 			<email>JuanC.Prieto.Silos@gmail.com</email>
+			<url>https://www.jcprieto.es</url>
 		</developer>
 	</developers>
 	<build>
@@ -44,6 +62,25 @@
 				<configuration>
 					<source>8</source>
 					<target>8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>3.2.4</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<gpgExecutable>gpg</gpgExecutable>
+					<keyname>558442263B6AC29B9FF4AEB5F320065B4D152C59</keyname>
+					<passphrase>${env.GPG_PASSPHRASE}</passphrase>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -73,6 +110,18 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.central</groupId>
+				<artifactId>central-publishing-maven-plugin</artifactId>
+				<version>0.9.0</version>
+				<extensions>true</extensions>
+				<configuration>
+					<publishingServerId>central</publishingServerId>
+					<tokenAuth>true</tokenAuth>
+					<waitUntil>published</waitUntil>
+					<checksums>required</checksums>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
