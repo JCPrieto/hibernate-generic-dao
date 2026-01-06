@@ -36,15 +36,15 @@ import java.util.List;
  * individual properties can be returned for each row in the result set. These
  * properties can be returned as maps, lists, arrays or a single object
  * depending on <code>resultMode</code>. See also the {@link Field}
- * class.<br/><br/>
+ * class.<br><br>
  * 
  * Additionally, fields can be specified using column operators:
  * <code>COUNT, COUNT DISTINCT, SUM, AVG, MAX, MIN</code>. Note that fields with
  * column operators can not be mixed with fields that do not use column
- * operators.<br/><br/>
+ * operators.<br><br>
  * 
  * Set <code>distinct</code> to <code>true</code> in order to filter out
- * duplicate results.<br/><br/>
+ * duplicate results.<br><br>
  * 
  * <li>Fetch - This determines which attached objects to pull along with the
  * base search object. With Hibernate this eagerly loads the specified
@@ -84,7 +84,7 @@ public interface ISearch {
 	 * 
 	 * @see #getResultMode()
 	 */
-	public static final int RESULT_AUTO = 0;
+	int RESULT_AUTO = 0;
 
 	/**
 	 * Value for result mode. <code>RESULT_ARRAY</code> returns each result as
@@ -103,7 +103,7 @@ public interface ISearch {
 	 * 
 	 * @see #getResultMode()
 	 */
-	public static final int RESULT_ARRAY = 1;
+	int RESULT_ARRAY = 1;
 
 	/**
 	 * Value for result mode. <code>RESULT_LIST</code> returns each result as a
@@ -121,7 +121,7 @@ public interface ISearch {
 	 * 
 	 * @see #getResultMode()
 	 */
-	public static final int RESULT_LIST = 2;
+	int RESULT_LIST = 2;
 
 	/**
 	 * Value for result mode. <code>RESULT_MAP</code> returns each row as a map
@@ -140,7 +140,7 @@ public interface ISearch {
 	 * 
 	 * @see #getResultMode()
 	 */
-	public static final int RESULT_MAP = 3;
+	int RESULT_MAP = 3;
 
 	/**
 	 * Value for result mode. <code>RESULT_SINGLE</code> - Exactly one field or
@@ -159,7 +159,7 @@ public interface ISearch {
 	 * 
 	 * @see #getResultMode()
 	 */
-	public static final int RESULT_SINGLE = 4;
+	int RESULT_SINGLE = 4;
 
 	/**
 	 * Zero based index of first result record to return.
@@ -167,7 +167,7 @@ public interface ISearch {
 	 * <p>
 	 * <code>&lt;= 0</code> for unspecified value.
 	 */
-	public int getFirstResult();
+	int getFirstResult();
 
 	/**
 	 * The maximum number of records to return. Also used as page size when
@@ -176,37 +176,37 @@ public interface ISearch {
 	 * <p>
 	 * <code>&lt;= 0</code> for unspecified value.
 	 */
-	public int getMaxResults();
+	int getMaxResults();
 
 	/**
 	 * Zero based index of the page of records to return. The size of a page is
 	 * determined by <code>maxResults</code>. If both <code>page</code> and
-	 * <code>maxResults</code> are specified (i.e. > 0), the first result
+	 * <code>maxResults</code> are specified (i.e. {@code > 0}), the first result
 	 * returned is calculated by <code>page * maxResults</code>.
 	 * 
 	 * <p>
 	 * <code>firstResult</code> has precedence over <code>page</code>. So if
-	 * <code>firstResult</code> is specified (i.e. > 0), <code>page</code> is
+	 * <code>firstResult</code> is specified (i.e. {@code > 0}), <code>page</code> is
 	 * ignored.
 	 * 
 	 * <p>
 	 * <code>&lt;= 0</code> for unspecified value.
 	 */
-	public int getPage();
+	int getPage();
 
-	public Class<?> getSearchClass();
+	Class<?> getSearchClass();
 
-	public List<Filter> getFilters();
+	List<Filter> getFilters();
 
-	public boolean isDisjunction();
+	boolean isDisjunction();
 
-	public List<Sort> getSorts();
+	List<Sort> getSorts();
 
-	public List<Field> getFields();
-	
-	public boolean isDistinct();
+	List<Field> getFields();
 
-	public List<String> getFetches();
+	boolean isDistinct();
+
+	List<String> getFetches();
 
 	/**
 	 * Result mode tells the search what form to use for the results. Options
@@ -221,6 +221,6 @@ public interface ISearch {
 	 * @see #RESULT_MAP
 	 * @see #RESULT_SINGLE
 	 */
-	public int getResultMode();
+	int getResultMode();
 
 }

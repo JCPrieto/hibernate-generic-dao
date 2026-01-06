@@ -14,19 +14,17 @@
  */
 package com.googlecode.genericdao.dao.hibernate.original;
 
-import java.io.Serializable;
-import java.util.List;
-
-import org.hibernate.NonUniqueResultException;
-
 import com.googlecode.genericdao.dao.BaseDAODispatcher;
 import com.googlecode.genericdao.dao.DAODispatcherException;
 import com.googlecode.genericdao.search.ExampleOptions;
 import com.googlecode.genericdao.search.Filter;
 import com.googlecode.genericdao.search.ISearch;
 import com.googlecode.genericdao.search.SearchResult;
+import org.hibernate.NonUniqueResultException;
 
 import javax.activation.UnsupportedDataTypeException;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>This is an implementation of GeneralDAO that delegates to other DAOs
@@ -40,7 +38,7 @@ import javax.activation.UnsupportedDataTypeException;
  * set the map like this. (Of course tools like Spring can be used to do this
  * configuration more elequently.)
  * <pre>
- * Map<String,Object> specificDAOs = new HashMap<String,Object>();
+ * {@code Map<String, Object>} specificDAOs = new {@code HashMap<String, Object>()};
  * specificDAOs.put("com.myproject.model.Customer", customerDAO);
  * 
  * DAODispatcher dispatcher = new DAODispatcher();
@@ -143,7 +141,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 	}
 
 	/**
-	 * @deprecated use flush(Class<?>)
+	 * @deprecated use flush({@code Class<?>})
 	 */
 	public void flush() {
 		throw new DAODispatcherException(

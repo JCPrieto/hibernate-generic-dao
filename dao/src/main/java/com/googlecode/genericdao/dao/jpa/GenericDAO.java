@@ -14,15 +14,14 @@
  */
 package com.googlecode.genericdao.dao.jpa;
 
-import java.io.Serializable;
-import java.util.List;
-
 import com.googlecode.genericdao.search.ExampleOptions;
 import com.googlecode.genericdao.search.Filter;
 import com.googlecode.genericdao.search.ISearch;
 import com.googlecode.genericdao.search.SearchResult;
 
 import javax.activation.UnsupportedDataTypeException;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * Interface for a Data Access Object that can be used for a single specified
@@ -47,13 +46,13 @@ public interface GenericDAO<T, ID extends Serializable> {
 	 * <p>
 	 * If none is found, return null.
 	 */
-	public T find(ID id);
+	T find(ID id);
 
 	/**
 	 * Get all entities of the specified type from the datastore that have one
 	 * of these ids.
 	 */
-	public T[] find(ID... ids);
+	T[] find(ID... ids);
 
 	/**
 	 * <p>
@@ -73,7 +72,7 @@ public interface GenericDAO<T, ID extends Serializable> {
      * @throws javax.persistence.EntityNotFoundException if the entity state
      *         cannot be accessed
 	 */
-	public T getReference(ID id);
+	T getReference(ID id);
 
 	/**
 	 * <p>
@@ -93,7 +92,7 @@ public interface GenericDAO<T, ID extends Serializable> {
      * @throws javax.persistence.EntityNotFoundException if the entity state
      *         cannot be accessed
 	 */
-	public T[] getReferences(ID... ids);
+	T[] getReferences(ID... ids);
 
 	/**
 	 * <p>
@@ -106,7 +105,7 @@ public interface GenericDAO<T, ID extends Serializable> {
 	 * immediately. With <code>persist</code> a datastore-generated id may not
 	 * be pulled until flush time.
 	 */
-	public void persist(T... entities);
+	void persist(T... entities);
 
 	/**
 	 * <p>
@@ -121,7 +120,7 @@ public interface GenericDAO<T, ID extends Serializable> {
 	 * session. This operation cascades to associated instances if the
 	 * association is mapped with cascade="merge".
 	 */
-	public T merge(T entity);
+	T merge(T entity);
 
 	/**
 	 * <p>
@@ -136,7 +135,7 @@ public interface GenericDAO<T, ID extends Serializable> {
 	 * session. This operation cascades to associated instances if the
 	 * association is mapped with cascade="merge".
 	 */
-	public T[] merge(T... entities);
+	T[] merge(T... entities);
 	
 	/**
 	 * If an entity with the same ID already exists in the database, merge the
@@ -144,7 +143,7 @@ public interface GenericDAO<T, ID extends Serializable> {
 	 * case, a managed entity with the changed values is returned. It may or may
 	 * not be the same object as was passed in.
 	 */
-	public T save(T entity);
+	T save(T entity);
 
 	/**
 	 * <p>
@@ -156,7 +155,7 @@ public interface GenericDAO<T, ID extends Serializable> {
 	 * @return an array containing each managed entity corresponding to the
 	 *         entities passed in.
 	 */
-	public T[] save(T... entities);
+	T[] save(T... entities);
 
 	/**
 	 * Remove the specified entity from the datastore.
@@ -164,12 +163,12 @@ public interface GenericDAO<T, ID extends Serializable> {
 	 * @return <code>true</code> if the entity is found in the datastore and
 	 *         removed, <code>false</code> if it is not found.
 	 */
-	public boolean remove(T entity);
+	boolean remove(T entity);
 
 	/**
 	 * Remove all of the specified entities from the datastore.
 	 */
-	public void remove(T... entities);
+	void remove(T... entities);
 
 	/**
 	 * Remove the entity with the specified type and id from the datastore.
@@ -177,73 +176,73 @@ public interface GenericDAO<T, ID extends Serializable> {
 	 * @return <code>true</code> if the entity is found in the datastore and
 	 *         removed, <code>false</code> if it is not found.
 	 */
-	public boolean removeById(ID id);
+	boolean removeById(ID id);
 
 	/**
 	 * Remove all the entities of the given type from the datastore that have
 	 * one of these ids.
 	 */
-	public void removeByIds(ID... ids);
+	void removeByIds(ID... ids);
 
 	/**
 	 * Get a list of all the objects of the specified type.
 	 */
-	public List<T> findAll();
+	List<T> findAll();
 
 	/**
 	 * Search for entities given the search parameters in the specified
 	 * <code>ISearch</code> object.
-	 * 
-	 * @param RT The result type is automatically determined by the context in which the method is called.
+	 *
+	 * @param <RT> The result type is automatically determined by the context in which the method is called.
 	 */
-	public <RT> List<RT> search(ISearch search);
+	<RT> List<RT> search(ISearch search);
 
 	/**
 	 * Search for a single entity using the given parameters.
-	 * 
-	 * @param RT The result type is automatically determined by the context in which the method is called.
+	 *
+	 * @param <RT> The result type is automatically determined by the context in which the method is called.
 	 */
-	public <RT> RT searchUnique(ISearch search);
+	<RT> RT searchUnique(ISearch search);
 
 	/**
 	 * Returns the total number of results that would be returned using the
 	 * given <code>ISearch</code> if there were no paging or maxResults limits.
 	 */
-	public int count(ISearch search);
+	int count(ISearch search);
 
 	/**
 	 * Returns a <code>SearchResult</code> object that includes both the list of
 	 * results like <code>search()</code> and the total length like
 	 * <code>count()</code>.
-	 * 
-	 * @param RT The result type is automatically determined by the context in which the method is called.
+	 *
+	 * @param <RT> The result type is automatically determined by the context in which the method is called.
 	 */
-	public <RT> SearchResult<RT> searchAndCount(ISearch search);
+	<RT> SearchResult<RT> searchAndCount(ISearch search);
 
 	/**
 	 * Returns <code>true</code> if the object is connected to the current
 	 * Hibernate session.
 	 */
-	public boolean isAttached(T entity);
+	boolean isAttached(T entity);
 
 	/**
 	 * Refresh the content of the given entity from the current datastore state.
 	 */
-	public void refresh(T... entities);
+	void refresh(T... entities);
 
 	/**
 	 * Flushes changes in the Hibernate session to the datastore.
 	 */
-	public void flush();
+	void flush();
 	
 	/**
 	 * Generates a search filter from the given example using default options. 
 	 */
-	public Filter getFilterFromExample(T example) throws UnsupportedDataTypeException;
+	Filter getFilterFromExample(T example) throws UnsupportedDataTypeException;
 	
 	/**
 	 * Generates a search filter from the given example using the specified options. 
 	 */
-	public Filter getFilterFromExample(T example, ExampleOptions options) throws UnsupportedDataTypeException;
+	Filter getFilterFromExample(T example, ExampleOptions options) throws UnsupportedDataTypeException;
 
 }

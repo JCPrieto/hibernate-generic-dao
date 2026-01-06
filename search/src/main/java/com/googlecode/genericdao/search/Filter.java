@@ -109,7 +109,7 @@ public class Filter implements Serializable {
      * Create a new Filter using the == operator.
      */
     public static Filter equal(String property, Object value) throws UnsupportedDataTypeException {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             throw new UnsupportedDataTypeException();
         }
 
@@ -117,10 +117,10 @@ public class Filter implements Serializable {
     }
 
     /**
-     * Create a new Filter using the < operator.
+     * Create a new Filter using the {@code <} operator.
      */
     public static Filter lessThan(String property, Object value) throws UnsupportedDataTypeException {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             throw new UnsupportedDataTypeException();
         }
 
@@ -128,10 +128,10 @@ public class Filter implements Serializable {
     }
 
     /**
-     * Create a new Filter using the > operator.
+     * Create a new Filter using the {@code >} operator.
      */
     public static Filter greaterThan(String property, Object value) throws UnsupportedDataTypeException {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             throw new UnsupportedDataTypeException();
         }
 
@@ -139,10 +139,10 @@ public class Filter implements Serializable {
     }
 
     /**
-     * Create a new Filter using the <= operator.
+     * Create a new Filter using the {@code <=} operator.
      */
     public static Filter lessOrEqual(String property, Object value) throws UnsupportedDataTypeException {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             throw new UnsupportedDataTypeException();
         }
 
@@ -150,10 +150,10 @@ public class Filter implements Serializable {
     }
 
     /**
-     * Create a new Filter using the >= operator.
+     * Create a new Filter using the {@code >=} operator.
      */
     public static Filter greaterOrEqual(String property, Object value) throws UnsupportedDataTypeException {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             throw new UnsupportedDataTypeException();
         }
 
@@ -250,7 +250,7 @@ public class Filter implements Serializable {
      * Create a new Filter using the != operator.
      */
     public static Filter notEqual(String property, Object value) throws UnsupportedDataTypeException {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             throw new UnsupportedDataTypeException();
         }
         return new Filter(property, value, OP_NOT_EQUAL);
@@ -261,7 +261,7 @@ public class Filter implements Serializable {
      * Create a new Filter using the == operator.
      */
     public static Filter equal(String property, Object value, ZoneId zoneId) {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             value = ((LocalDateTime) value).atZone(zoneId)
                     .withZoneSameInstant(ZoneId.of("UTC"))
                     .toLocalDateTime();
@@ -271,10 +271,10 @@ public class Filter implements Serializable {
     }
 
     /**
-     * Create a new Filter using the < operator.
+     * Create a new Filter using the {@code <} operator.
      */
     public static Filter lessThan(String property, Object value, ZoneId zoneId) {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             value = ((LocalDateTime) value).atZone(zoneId)
                     .withZoneSameInstant(ZoneId.of("UTC"))
                     .toLocalDateTime();
@@ -284,10 +284,10 @@ public class Filter implements Serializable {
     }
 
     /**
-     * Create a new Filter using the > operator.
+     * Create a new Filter using the {@code >} operator.
      */
     public static Filter greaterThan(String property, Object value, ZoneId zoneId) {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             value = ((LocalDateTime) value).atZone(zoneId)
                     .withZoneSameInstant(ZoneId.of("UTC"))
                     .toLocalDateTime();
@@ -297,10 +297,10 @@ public class Filter implements Serializable {
     }
 
     /**
-     * Create a new Filter using the <= operator.
+     * Create a new Filter using the {@code <=} operator.
      */
     public static Filter lessOrEqual(String property, Object value, ZoneId zoneId) {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             value = ((LocalDateTime) value).atZone(zoneId)
                     .withZoneSameInstant(ZoneId.of("UTC"))
                     .toLocalDateTime();
@@ -310,10 +310,10 @@ public class Filter implements Serializable {
     }
 
     /**
-     * Create a new Filter using the >= operator.
+     * Create a new Filter using the {@code >=} operator.
      */
     public static Filter greaterOrEqual(String property, Object value, ZoneId zoneId) {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             value = ((LocalDateTime) value).atZone(zoneId)
                     .withZoneSameInstant(ZoneId.of("UTC"))
                     .toLocalDateTime();
@@ -330,16 +330,25 @@ public class Filter implements Serializable {
      * specified.
      */
     public static Filter in(String property, Collection<?> value, ZoneId zoneId) {
+        return getFilter(property, value, zoneId, OP_IN);
+    }
+
+    private static Filter getFilter(String property, Collection<?> value, ZoneId zoneId, int opIn) {
         if (value != null) {
+            Collection<Object> newValues = new ArrayList<>();
             for (Object v : value) {
                 if (v instanceof LocalDateTime) {
-                    v = ((LocalDateTime) v).atZone(zoneId)
+                    LocalDateTime newV = ((LocalDateTime) v).atZone(zoneId)
                             .withZoneSameInstant(ZoneId.of("UTC"))
                             .toLocalDateTime();
+                    newValues.add(newV);
+                } else {
+                    newValues.add(v);
                 }
             }
+            return new Filter(property, newValues, opIn);
         }
-        return new Filter(property, value, OP_IN);
+        return new Filter(property, null, opIn);
     }
 
     /**
@@ -350,16 +359,25 @@ public class Filter implements Serializable {
      * specified.
      */
     public static Filter in(String property, ZoneId zoneId, Object... value) {
+        return getFilter(property, zoneId, OP_IN, value);
+    }
+
+    private static Filter getFilter(String property, ZoneId zoneId, int opIn, Object[] value) {
         if (value != null) {
+            Collection<Object> newValues = new ArrayList<>();
             for (Object v : value) {
                 if (v instanceof LocalDateTime) {
-                    v = ((LocalDateTime) v).atZone(zoneId)
+                    LocalDateTime newV = ((LocalDateTime) v).atZone(zoneId)
                             .withZoneSameInstant(ZoneId.of("UTC"))
                             .toLocalDateTime();
+                    newValues.add(newV);
+                } else {
+                    newValues.add(v);
                 }
             }
+            return new Filter(property, newValues, opIn);
         }
-        return new Filter(property, value, OP_IN);
+        return new Filter(property, null, opIn);
     }
 
     /**
@@ -370,16 +388,7 @@ public class Filter implements Serializable {
      * specified.
      */
     public static Filter notIn(String property, Collection<?> value, ZoneId zoneId) {
-        if (value != null) {
-            for (Object v : value) {
-                if (v instanceof LocalDateTime) {
-                    v = ((LocalDateTime) v).atZone(zoneId)
-                            .withZoneSameInstant(ZoneId.of("UTC"))
-                            .toLocalDateTime();
-                }
-            }
-        }
-        return new Filter(property, value, OP_NOT_IN);
+        return getFilter(property, value, zoneId, OP_NOT_IN);
     }
 
     /**
@@ -390,23 +399,14 @@ public class Filter implements Serializable {
      * specified.
      */
     public static Filter notIn(String property, ZoneId zoneId, Object... value) {
-        if (value != null) {
-            for (Object v : value) {
-                if (v instanceof LocalDateTime) {
-                    v = ((LocalDateTime) v).atZone(zoneId)
-                            .withZoneSameInstant(ZoneId.of("UTC"))
-                            .toLocalDateTime();
-                }
-            }
-        }
-        return new Filter(property, value, OP_NOT_IN);
+        return getFilter(property, zoneId, OP_NOT_IN, value);
     }
 
     /**
      * Create a new Filter using the != operator.
      */
     public static Filter notEqual(String property, Object value, ZoneId zoneId) {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             value = ((LocalDateTime) value).atZone(zoneId)
                     .withZoneSameInstant(ZoneId.of("UTC"))
                     .toLocalDateTime();
@@ -512,11 +512,11 @@ public class Filter implements Serializable {
      * // Referencing a property in a custom expression
      * Filter.custom("{serialNumber} like '%4780%'");
      * // comparing two properties
-     * Filter.custom("{parent.spotCount} > {spotCount} + 4");
+     * Filter.custom("{parent.spotCount} &gt; {spotCount} + 4");
      * // A constant
      * Filter.custom("1 = 1");
      * // A function
-     * Filter.custom("{dueDate} > current_date()");
+     * Filter.custom("{dueDate} &gt; current_date()");
      * // A subquery
      * Filter.custom("{id} in (select pc.cat_id from popular_cats pc where pc.color = 'blue')");
      * </pre>
@@ -540,11 +540,11 @@ public class Filter implements Serializable {
      * // Referencing a property in a custom expression
      * Filter.custom("{serialNumber} like ?1", "%4780%");
      * // comparing two properties
-     * Filter.custom("{parent.spotCount} + ?1 > {spotCount} + ?2", 0, 4);
+     * Filter.custom("{parent.spotCount} + ?1 &gt; {spotCount} + ?2", 0, 4);
      * // A constant
      * Filter.custom("?1 = ?2", 1, 1);
      * // A function
-     * Filter.custom("?1 > current_date()", someDate);
+     * Filter.custom("?1 &gt; current_date()", someDate);
      * // A subquery
      * Filter.custom("{id} in (select pc.cat_id from popular_cats pc where pc.color = ?1)", "blue");
      * </pre>
@@ -570,11 +570,11 @@ public class Filter implements Serializable {
      * // Referencing a property in a custom expression
      * Filter.custom("{serialNumber} like ?1", Collections.singleton("%4780%"));
      * // comparing two properties
-     * Filter.custom("{parent.spotCount} + ?1 > {spotCount} + ?2", Arrays.asList(0, 4));
+     * Filter.custom("{parent.spotCount} + ?1 &gt; {spotCount} + ?2", Arrays.asList(0, 4));
      * // A constant
      * Filter.custom("?1 = ?2", Arrays.asList(1, 1));
      * // A function
-     * Filter.custom("?1 > current_date()", Collections.singleton(someDate));
+     * Filter.custom("?1 &gt; current_date()", Collections.singleton(someDate));
      * // A subquery
      * Filter.custom("{id} in (select pc.cat_id from popular_cats pc where pc.color = ?1)", Collections.singleton("blue"));
      * </pre>
@@ -603,7 +603,6 @@ public class Filter implements Serializable {
      * Used with OP_OR and OP_AND filters. These filters take a collection of
      * filters as their value. This method removes a filter from that list.
      */
-    @SuppressWarnings("unchecked")
     public void remove(Filter filter) {
         if (value == null || !(value instanceof List)) {
             return;
@@ -651,7 +650,7 @@ public class Filter implements Serializable {
         } else if (value instanceof Collection<?>) {
             return new ArrayList<Object>((Collection<?>) value);
         } else if (value.getClass().isArray()) {
-            ArrayList<Object> list = new ArrayList<Object>(Array.getLength(value));
+            ArrayList<Object> list = new ArrayList<>(Array.getLength(value));
             for (int i = 0; i < Array.getLength(value); i++) {
                 list.add(Array.get(value, i));
             }
@@ -676,7 +675,7 @@ public class Filter implements Serializable {
         } else if (value instanceof Collection<?>) {
             return (Collection<?>) value;
         } else if (value.getClass().isArray()) {
-            ArrayList<Object> list = new ArrayList<Object>(Array.getLength(value));
+            ArrayList<Object> list = new ArrayList<>(Array.getLength(value));
             for (int i = 0; i < Array.getLength(value); i++) {
                 list.add(Array.get(value, i));
             }
@@ -775,14 +774,12 @@ public class Filter implements Serializable {
         } else if (!property.equals(other.property))
             return false;
         if (value == null) {
-            if (other.value != null)
-                return false;
-        } else if (!value.equals(other.value))
-            return false;
-        return true;
+            return other.value == null;
+        } else {
+            return value.equals(other.value);
+        }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public String toString() {
         switch (operator) {
@@ -832,9 +829,9 @@ public class Filter implements Serializable {
                         sb.append(op);
                     }
                     if (o instanceof Filter) {
-                        sb.append(o.toString());
+                        sb.append(o);
                     } else {
-                        sb.append("**INVALID VALUE - NOT A FILTER: (" + o + ") **");
+                        sb.append("**INVALID VALUE - NOT A FILTER: (").append(o).append(") **");
                     }
                 }
                 if (first)
@@ -846,44 +843,33 @@ public class Filter implements Serializable {
                 if (!(value instanceof Filter)) {
                     return "NOT: **INVALID VALUE - NOT A FILTER: (" + value + ") **";
                 }
-                return "not " + value.toString();
+                return "not " + value;
             case Filter.OP_SOME:
                 if (!(value instanceof Filter)) {
                     return "SOME: **INVALID VALUE - NOT A FILTER: (" + value + ") **";
                 }
-                return "some `" + property + "` {" + value.toString() + "}";
+                return "some `" + property + "` {" + value + "}";
             case Filter.OP_ALL:
                 if (!(value instanceof Filter)) {
                     return "ALL: **INVALID VALUE - NOT A FILTER: (" + value + ") **";
                 }
-                return "all `" + property + "` {" + value.toString() + "}";
+                return "all `" + property + "` {" + value + "}";
             case Filter.OP_NONE:
                 if (!(value instanceof Filter)) {
                     return "NONE: **INVALID VALUE - NOT A FILTER: (" + value + ") **";
                 }
-                return "none `" + property + "` {" + value.toString() + "}";
+                return "none `" + property + "` {" + value + "}";
             case Filter.OP_CUSTOM:
                 if (value == null || (value instanceof Collection && ((Collection) value).isEmpty()) || (value.getClass().isArray() && Array.getLength(value) == 0)) {
                     return "CUSTOM[" + property + "]";
                 } else {
                     StringBuilder sb2 = new StringBuilder();
                     sb2.append("CUSTOM[").append(property).append("]values(");
-                    boolean first2 = true;
                     if (value instanceof Collection) {
-                        if (first2) {
-                            first2 = false;
-                        } else {
-                            sb2.append(',');
-                        }
                         for (Object o : (Collection) value) {
                             sb2.append(o);
                         }
                     } else if (value.getClass().isArray()) {
-                        if (first2) {
-                            first2 = false;
-                        } else {
-                            sb2.append(',');
-                        }
                         for (int i = 0; i < Array.getLength(value); i++) {
                             sb2.append(Array.get(value, i));
                         }
@@ -891,6 +877,7 @@ public class Filter implements Serializable {
                         sb2.append(value);
                     }
                     sb2.append(")");
+                    return sb2.toString();
                 }
             default:
                 return "**INVALID OPERATOR: (" + operator + ") - VALUE: " + InternalUtil.paramDisplayString(value) + " **";

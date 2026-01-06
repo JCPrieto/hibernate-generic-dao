@@ -15,19 +15,10 @@
 package com.googlecode.genericdao.search;
 
 import javax.activation.UnsupportedDataTypeException;
-
-import static com.googlecode.genericdao.search.ISearch.RESULT_ARRAY;
-import static com.googlecode.genericdao.search.ISearch.RESULT_AUTO;
-import static com.googlecode.genericdao.search.ISearch.RESULT_LIST;
-import static com.googlecode.genericdao.search.ISearch.RESULT_MAP;
-import static com.googlecode.genericdao.search.ISearch.RESULT_SINGLE;
-
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+
+import static com.googlecode.genericdao.search.ISearch.*;
 
 /**
  * Utilities for working with searches {@link ISearch}, {@link IMutableSearch}.
@@ -38,12 +29,12 @@ public class SearchUtil {
     // ---------- Add ----------
 
     public static void addFetch(IMutableSearch search, String property) {
-        if (property == null || "".equals(property))
+        if (property == null || property.isEmpty())
             return; // null properties do nothing, don't bother to add them.
 
         List<String> fetches = search.getFetches();
         if (fetches == null) {
-            fetches = new ArrayList<String>();
+            fetches = new ArrayList<>();
             search.setFetches(fetches);
         }
         fetches.add(property);
@@ -60,7 +51,7 @@ public class SearchUtil {
     public static void addField(IMutableSearch search, Field field) {
         List<Field> fields = search.getFields();
         if (fields == null) {
-            fields = new ArrayList<Field>();
+            fields = new ArrayList<>();
             search.setFields(fields);
         }
         fields.add(field);
@@ -119,7 +110,7 @@ public class SearchUtil {
     public static void addFilter(IMutableSearch search, Filter filter) {
         List<Filter> filters = search.getFilters();
         if (filters == null) {
-            filters = new ArrayList<Filter>();
+            filters = new ArrayList<>();
             search.setFilters(filters);
         }
         filters.add(filter);
@@ -174,28 +165,28 @@ public class SearchUtil {
     }
 
     /**
-     * Add a filter that uses the >= operator.
+     * Add a filter that uses the {@code >=} operator.
      */
     public static void addFilterGreaterOrEqual(IMutableSearch search, String property, Object value) throws UnsupportedDataTypeException {
         addFilter(search, Filter.greaterOrEqual(property, value));
     }
 
     /**
-     * Add a filter that uses the >= operator.
+     * Add a filter that uses the {@code >=} operator.
      */
     public static void addFilterGreaterOrEqual(IMutableSearch search, String property, Object value, ZoneId zoneId) {
         addFilter(search, Filter.greaterOrEqual(property, value, zoneId));
     }
 
     /**
-     * Add a filter that uses the > operator.
+     * Add a filter that uses the {@code >} operator.
      */
     public static void addFilterGreaterThan(IMutableSearch search, String property, Object value) throws UnsupportedDataTypeException {
         addFilter(search, Filter.greaterThan(property, value));
     }
 
     /**
-     * Add a filter that uses the > operator.
+     * Add a filter that uses the {@code >} operator.
      */
     public static void addFilterGreaterThan(IMutableSearch search, String property, Object value, ZoneId zoneId) {
         addFilter(search, Filter.greaterThan(property, value, zoneId));
@@ -245,28 +236,28 @@ public class SearchUtil {
     }
 
     /**
-     * Add a filter that uses the <= operator.
+     * Add a filter that uses the {@code <=} operator.
      */
     public static void addFilterLessOrEqual(IMutableSearch search, String property, Object value) throws UnsupportedDataTypeException {
         addFilter(search, Filter.lessOrEqual(property, value));
     }
 
     /**
-     * Add a filter that uses the <= operator.
+     * Add a filter that uses the {@code <=} operator.
      */
     public static void addFilterLessOrEqual(IMutableSearch search, String property, Object value, ZoneId zoneId) {
         addFilter(search, Filter.lessOrEqual(property, value, zoneId));
     }
 
     /**
-     * Add a filter that uses the < operator.
+     * Add a filter that uses the {@code <} operator.
      */
     public static void addFilterLessThan(IMutableSearch search, String property, Object value) throws UnsupportedDataTypeException {
         addFilter(search, Filter.lessThan(property, value));
     }
 
     /**
-     * Add a filter that uses the < operator.
+     * Add a filter that uses the {@code <} operator.
      */
     public static void addFilterLessThan(IMutableSearch search, String property, Object value, ZoneId zoneId) {
         addFilter(search, Filter.lessThan(property, value, zoneId));
@@ -386,7 +377,7 @@ public class SearchUtil {
     /**
      * Add a filter that uses a custom expression.
      *
-     * @see {@link Filter#custom(String)}
+     * @see Filter#custom(String)
      */
     public static void addFilterCustom(IMutableSearch search, String expression) {
         addFilter(search, Filter.custom(expression));
@@ -395,7 +386,7 @@ public class SearchUtil {
     /**
      * Add a filter that uses a custom expression.
      *
-     * @see {@link Filter#custom(String, Object...)}
+     * @see Filter#custom(String, Object...)
      */
     public static void addFilterCustom(IMutableSearch search, String expression, Object... values) {
         addFilter(search, Filter.custom(expression, values));
@@ -404,7 +395,7 @@ public class SearchUtil {
     /**
      * Add a filter that uses a custom expression.
      *
-     * @see {@link Filter#custom(String, Collection)}
+     * @see Filter#custom(String, Collection)
      */
     public static void addFilterCustom(IMutableSearch search, String expression, Collection<?> values) {
         addFilter(search, Filter.custom(expression, values));
@@ -417,7 +408,7 @@ public class SearchUtil {
 
         List<Sort> sorts = search.getSorts();
         if (sorts == null) {
-            sorts = new ArrayList<Sort>();
+            sorts = new ArrayList<>();
             search.setSorts(sorts);
         }
         sorts.add(sort);
@@ -493,23 +484,14 @@ public class SearchUtil {
         if (search.getFields() == null)
             return;
 
-        Iterator<Field> itr = search.getFields().iterator();
-        while (itr.hasNext()) {
-            if (itr.next().getProperty().equals(property))
-                itr.remove();
-        }
+        search.getFields().removeIf(field -> field.getProperty().equals(property));
     }
 
     public static void removeField(IMutableSearch search, String property, String key) {
         if (search.getFields() == null)
             return;
 
-        Iterator<Field> itr = search.getFields().iterator();
-        while (itr.hasNext()) {
-            Field field = itr.next();
-            if (field.getProperty().equals(property) && field.getKey().equals(key))
-                itr.remove();
-        }
+        search.getFields().removeIf(field -> field.getProperty().equals(property) && field.getKey().equals(key));
     }
 
     public static void removeFilter(IMutableSearch search, Filter filter) {
@@ -524,11 +506,7 @@ public class SearchUtil {
     public static void removeFiltersOnProperty(IMutableSearch search, String property) {
         if (property == null || search.getFilters() == null)
             return;
-        Iterator<Filter> itr = search.getFilters().iterator();
-        while (itr.hasNext()) {
-            if (property.equals(itr.next().getProperty()))
-                itr.remove();
-        }
+        search.getFilters().removeIf(filter -> property.equals(filter.getProperty()));
     }
 
     public static void removeSort(IMutableSearch search, Sort sort) {
@@ -539,11 +517,7 @@ public class SearchUtil {
     public static void removeSort(IMutableSearch search, String property) {
         if (property == null || search.getSorts() == null)
             return;
-        Iterator<Sort> itr = search.getSorts().iterator();
-        while (itr.hasNext()) {
-            if (property.equals(itr.next().getProperty()))
-                itr.remove();
-        }
+        search.getSorts().removeIf(sort -> property.equals(sort.getProperty()));
     }
 
     // ---------- Clear ----------
@@ -593,11 +567,11 @@ public class SearchUtil {
     public static void mergeSortsBefore(IMutableSearch search, List<Sort> sorts) {
         List<Sort> list = search.getSorts();
         if (list == null) {
-            list = new ArrayList<Sort>();
+            list = new ArrayList<>();
             search.setSorts(list);
         }
 
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             // remove any sorts from the search that already sort on the same
             // property as one of the new sorts
             Iterator<Sort> itr = list.iterator();
@@ -634,7 +608,7 @@ public class SearchUtil {
     public static void mergeSortsAfter(IMutableSearch search, List<Sort> sorts) {
         List<Sort> list = search.getSorts();
         if (list == null) {
-            list = new ArrayList<Sort>();
+            list = new ArrayList<>();
             search.setSorts(list);
         }
 
@@ -675,7 +649,7 @@ public class SearchUtil {
     public static void mergeFetches(IMutableSearch search, List<String> fetches) {
         List<String> list = search.getFetches();
         if (list == null) {
-            list = new ArrayList<String>();
+            list = new ArrayList<>();
             search.setFetches(list);
         }
 
@@ -700,15 +674,15 @@ public class SearchUtil {
     public static void mergeFiltersAnd(IMutableSearch search, List<Filter> filters) {
         List<Filter> list = search.getFilters();
         if (list == null) {
-            list = new ArrayList<Filter>();
+            list = new ArrayList<>();
             search.setFilters(list);
         }
 
-        if (list.size() == 0 || !search.isDisjunction()) {
+        if (list.isEmpty() || !search.isDisjunction()) {
             search.setDisjunction(false);
             list.addAll(filters);
         } else {
-            search.setFilters(new ArrayList<Filter>());
+            search.setFilters(new ArrayList<>());
 
             // add the previous filters with an OR
             Filter orFilter = Filter.or();
@@ -734,15 +708,15 @@ public class SearchUtil {
     public static void mergeFiltersOr(IMutableSearch search, List<Filter> filters) {
         List<Filter> list = search.getFilters();
         if (list == null) {
-            list = new ArrayList<Filter>();
+            list = new ArrayList<>();
             search.setFilters(list);
         }
 
-        if (list.size() == 0 || search.isDisjunction()) {
+        if (list.isEmpty() || search.isDisjunction()) {
             search.setDisjunction(true);
             list.addAll(filters);
         } else {
-            search.setFilters(new ArrayList<Filter>());
+            search.setFilters(new ArrayList<>());
 
             // add the previous filters with an AND
             Filter orFilter = Filter.and();
@@ -769,7 +743,7 @@ public class SearchUtil {
     public static void mergeFieldsBefore(IMutableSearch search, List<Field> fields) {
         List<Field> list = search.getFields();
         if (list == null) {
-            list = new ArrayList<Field>();
+            list = new ArrayList<>();
             search.setFields(list);
         }
 
@@ -791,7 +765,7 @@ public class SearchUtil {
     public static void mergeFieldsAfter(IMutableSearch search, List<Field> fields) {
         List<Field> list = search.getFields();
         if (list == null) {
-            list = new ArrayList<Field>();
+            list = new ArrayList<>();
             search.setFields(list);
         }
 
@@ -816,9 +790,9 @@ public class SearchUtil {
      * <p>
      * The calculation is as follows:
      * <ul>
-     * <li>If <code>firstResult</code> is defined (i.e. > 0), use it.
+     * <li>If <code>firstResult</code> is defined (i.e. {@code > 0}), use it.
      * <li>Otherwise if <code>page</code> and <code>maxResults</code> are
-     * defined (i.e. > 0), use <code>page * maxResults</code>.
+     * defined (i.e. {@code > 0}), use <code>page * maxResults</code>.
      * <li>Otherwise, just use 0.
      * </ul>
      */
@@ -868,20 +842,16 @@ public class SearchUtil {
     public static <T extends IMutableSearch> T copy(ISearch source, T destination) {
         shallowCopy(source, destination);
 
-        ArrayList<String> fetches = new ArrayList<String>();
-        fetches.addAll(source.getFetches());
+        ArrayList<String> fetches = new ArrayList<>(source.getFetches());
         destination.setFetches(fetches);
 
-        ArrayList<Field> fields = new ArrayList<Field>();
-        fields.addAll(source.getFields());
+        ArrayList<Field> fields = new ArrayList<>(source.getFields());
         destination.setFields(fields);
 
-        ArrayList<Filter> filters = new ArrayList<Filter>();
-        filters.addAll(source.getFilters());
+        ArrayList<Filter> filters = new ArrayList<>(source.getFilters());
         destination.setFilters(filters);
 
-        ArrayList<Sort> sorts = new ArrayList<Sort>();
-        sorts.addAll(source.getSorts());
+        ArrayList<Sort> sorts = new ArrayList<>(source.getSorts());
         destination.setSorts(sorts);
 
         return destination;
@@ -920,10 +890,7 @@ public class SearchUtil {
             return false;
         if (search.getFilters() == null ? s.getFilters() != null : !search.getFilters().equals(s.getFilters()))
             return false;
-        if (search.getSorts() == null ? s.getSorts() != null : !search.getSorts().equals(s.getSorts()))
-            return false;
-
-        return true;
+        return search.getSorts() == null ? s.getSorts() == null : search.getSorts().equals(s.getSorts());
     }
 
     /**
@@ -973,7 +940,7 @@ public class SearchUtil {
                 sb.append("SINGLE");
                 break;
             default:
-                sb.append("**INVALID RESULT MODE: (" + search.getResultMode() + ")**");
+                sb.append("**INVALID RESULT MODE: (").append(search.getResultMode()).append(")**");
                 break;
         }
 
@@ -1027,11 +994,10 @@ public class SearchUtil {
             T result = visitor.visit(item);
             if (result != item || (removeNulls && result == null)) {
                 if (copy == null) {
-                    copy = new ArrayList<T>(list.size());
+                    copy = new ArrayList<>(list.size());
                     copy.addAll(list);
                 }
                 copy.set(i, result);
-                item = result;
             }
             i++;
         }
@@ -1075,8 +1041,8 @@ public class SearchUtil {
      * Used in walkFilters
      */
     private static final class FilterListVisitor extends ItemVisitor<Filter> {
-        private FilterVisitor visitor;
-        private boolean removeNulls;
+        private final FilterVisitor visitor;
+        private final boolean removeNulls;
 
         public FilterListVisitor(FilterVisitor visitor, boolean removeNulls) {
             this.visitor = visitor;

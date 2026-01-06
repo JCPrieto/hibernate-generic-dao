@@ -14,9 +14,6 @@
  */
 package com.googlecode.genericdao.dao.hibernate;
 
-import java.io.Serializable;
-import java.util.List;
-
 import com.googlecode.genericdao.dao.BaseDAODispatcher;
 import com.googlecode.genericdao.dao.DAODispatcherException;
 import com.googlecode.genericdao.search.ExampleOptions;
@@ -25,6 +22,8 @@ import com.googlecode.genericdao.search.ISearch;
 import com.googlecode.genericdao.search.SearchResult;
 
 import javax.activation.UnsupportedDataTypeException;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>This is an implementation of GeneralDAO that delegates to other DAOs
@@ -38,7 +37,7 @@ import javax.activation.UnsupportedDataTypeException;
  * set the map like this. (Of course tools like Spring can be used to do this
  * configuration more elequently.)
  * <pre>
- * Map<String,Object> specificDAOs = new HashMap<String,Object>();
+ * {@code Map<String, Object>} specificDAOs = new {@code HashMap<String, Object>()};
  * specificDAOs.put("com.myproject.model.Customer", customerDAO);
  * 
  * DAODispatcher dispatcher = new DAODispatcher();
@@ -66,7 +65,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 		Object specificDAO = getSpecificDAO(search.getSearchClass().getName());
 		if (specificDAO != null) {
 			if (specificDAO instanceof GenericDAO) {
-				return ((GenericDAO) specificDAO).count(search);
+				return ((GenericDAO<?, ?>) specificDAO).count(search);
 			} else {
 				return (Integer) callMethod(specificDAO, "count", search);
 			}
@@ -84,7 +83,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 				return (T) callMethod(specificDAO, "find", id);
 			}
 		} else {
-			return (T) generalDAO.find(type, id);
+			return generalDAO.find(type, id);
 		}
 	}
 
@@ -97,7 +96,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 				return (T[]) callMethod(specificDAO, "find", (Object[]) ids);
 			}
 		} else {
-			return (T[]) generalDAO.find(type, ids);
+			return generalDAO.find(type, ids);
 		}
 	}
 
@@ -115,7 +114,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 	}
 
 	/**
-	 * @deprecated use flush(Class<?>)
+	 * @deprecated use flush({@code Class<?>})
 	 */
 	public void flush() {
 		throw new DAODispatcherException(
@@ -144,7 +143,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 				return (T) callMethod(specificDAO, "getReference", id);
 			}
 		} else {
-			return (T) generalDAO.getReference(type, id);
+			return generalDAO.getReference(type, id);
 		}
 	}
 

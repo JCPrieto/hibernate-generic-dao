@@ -14,15 +14,14 @@
  */
 package com.googlecode.genericdao.dao.jpa;
 
-import java.io.Serializable;
-import java.util.List;
-
 import com.googlecode.genericdao.search.ExampleOptions;
 import com.googlecode.genericdao.search.Filter;
 import com.googlecode.genericdao.search.ISearch;
 import com.googlecode.genericdao.search.SearchResult;
 
 import javax.activation.UnsupportedDataTypeException;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * Interface for general Data Access Object that can be used for any type domain
@@ -40,7 +39,7 @@ public interface GeneralDAO {
 	 * <p>
 	 * If none is found, return null.
 	 */
-	public <T> T find(Class<T> type, Serializable id);
+	<T> T find(Class<T> type, Serializable id);
 
 	/**
 	 * Get all entities of the specified type from the datastore that have one
@@ -48,7 +47,7 @@ public interface GeneralDAO {
 	 * order of the ids listed in the call. For each entity that is not found in
 	 * the datastore, a null will be inserted in its place in the return array.
 	 */
-	public <T> T[] find(Class<T> type, Serializable... ids);
+	<T> T[] find(Class<T> type, Serializable... ids);
 
 	/**
 	 * <p>
@@ -60,11 +59,11 @@ public interface GeneralDAO {
 	 * of the entity's values. Values may be fetched lazily at a later time.
 	 * This increases performance if a another entity is being saved that should
 	 * reference this entity but the values of this entity are not needed.
-	 * 
-	 * @throws a
-	 *             HibernateException if no matching entity is found
+	 *
+	 * @throws javax.persistence.EntityNotFoundException
+	 *             if no matching entity is found
 	 */
-	public <T> T getReference(Class<T> type, Serializable id);
+	<T> T getReference(Class<T> type, Serializable id);
 
 	/**
 	 * <p>
@@ -77,12 +76,11 @@ public interface GeneralDAO {
 	 * of the entities' values. Values may be fetched lazily at a later time.
 	 * This increases performance if a another entity is being saved that should
 	 * reference these entities but the values of these entities are not needed.
-	 * 
-	 * @throws a
-	 *             HibernateException if any of the matching entities are not
-	 *             found.
+	 *
+	 * @throws javax.persistence.EntityNotFoundException
+	 *             if any of the matching entities are not found
 	 */
-	public <T> T[] getReferences(Class<T> type, Serializable... ids);
+	<T> T[] getReferences(Class<T> type, Serializable... ids);
 
 	/**
 	 * <p>
@@ -95,7 +93,7 @@ public interface GeneralDAO {
 	 * immediately. With <code>persist</code> a datastore-generated id may not
 	 * be pulled until flush time.
 	 */
-	public void persist(Object... entities);
+	void persist(Object... entities);
 
 	/**
 	 * <p>
@@ -110,7 +108,7 @@ public interface GeneralDAO {
 	 * session. This operation cascades to associated instances if the
 	 * association is mapped with cascade="merge".
 	 */
-	public <T> T merge(T entity);
+	<T> T merge(T entity);
 
 	/**
 	 * <p>
@@ -125,7 +123,7 @@ public interface GeneralDAO {
 	 * session. This operation cascades to associated instances if the
 	 * association is mapped with cascade="merge".
 	 */
-	public Object[] merge(Object... entities);
+	Object[] merge(Object... entities);
 	
 	/**
 	 * If an entity with the same ID already exists in the database, merge the
@@ -133,7 +131,7 @@ public interface GeneralDAO {
 	 * case, a managed entity with the changed values is returned. It may or may
 	 * not be the same object as was passed in.
 	 */
-	public <T> T save(T entity);
+	<T> T save(T entity);
 
 	/**
 	 * <p>
@@ -145,7 +143,7 @@ public interface GeneralDAO {
 	 * @return an array containing each managed entity corresponding to the
 	 *         entities passed in.
 	 */
-	public Object[] save(Object... entities);
+	Object[] save(Object... entities);
 	
 	/**
 	 * Remove the specified entity from the datastore.
@@ -153,12 +151,12 @@ public interface GeneralDAO {
 	 * @return <code>true</code> if the entity is found in the datastore and
 	 *         removed, <code>false</code> if it is not found.
 	 */
-	public boolean remove(Object entity);
+	boolean remove(Object entity);
 
 	/**
 	 * Remove all of the specified entities from the datastore.
 	 */
-	public void remove(Object... entities);
+	void remove(Object... entities);
 
 	/**
 	 * Remove the entity with the specified type and id from the datastore.
@@ -166,70 +164,68 @@ public interface GeneralDAO {
 	 * @return <code>true</code> if the entity is found in the datastore and
 	 *         removed, <code>false</code> if it is not found.
 	 */
-	public boolean removeById(Class<?> type, Serializable id);
+	boolean removeById(Class<?> type, Serializable id);
 
 	/**
 	 * Remove all the entities of the given type from the datastore that have
 	 * one of these ids.
 	 */
-	public void removeByIds(Class<?> type, Serializable... ids);
+	void removeByIds(Class<?> type, Serializable... ids);
 
 	/**
 	 * Get a list of all the objects of the specified type.
 	 */
-	public <T> List<T> findAll(Class<T> type);
+	<T> List<T> findAll(Class<T> type);
 
 	/**
 	 * Search for objects given the search parameters in the specified
 	 * <code>ISearch</code> object.
 	 */
-	@SuppressWarnings("unchecked")
-	public List search(ISearch search);
+	List search(ISearch search);
 
 	/**
 	 * Search for a single result using the given parameters.
 	 */
-	public Object searchUnique(ISearch search);
+	Object searchUnique(ISearch search);
 
 	/**
 	 * Returns the total number of results that would be returned using the
 	 * given <code>ISearch</code> if there were no paging or maxResults limits.
 	 */
-	public int count(ISearch search);
+	int count(ISearch search);
 
 	/**
 	 * Returns a <code>SearchResult</code> object that includes both the list of
 	 * results like <code>search()</code> and the total length like
 	 * <code>count()</code>.
 	 */
-	@SuppressWarnings("unchecked")
-	public SearchResult searchAndCount(ISearch search);
+	SearchResult searchAndCount(ISearch search);
 
 	/**
 	 * Returns <code>true</code> if the object is connected to the current
 	 * Hibernate session.
 	 */
-	public boolean isAttached(Object entity);
+	boolean isAttached(Object entity);
 
 	/**
 	 * Refresh the content of the given entity from the current datastore state.
 	 */
-	public void refresh(Object... entities);
+	void refresh(Object... entities);
 
 	/**
 	 * Flushes changes in the Hibernate session to the datastore.
 	 */
-	public void flush();
+	void flush();
 
 	/**
 	 * Generates a search filter from the given example using default options.
 	 */
-	public Filter getFilterFromExample(Object example) throws UnsupportedDataTypeException;
+	Filter getFilterFromExample(Object example) throws UnsupportedDataTypeException;
 
 	/**
 	 * Generates a search filter from the given example using the specified
 	 * options.
 	 */
-	public Filter getFilterFromExample(Object example, ExampleOptions options) throws UnsupportedDataTypeException;
+	Filter getFilterFromExample(Object example, ExampleOptions options) throws UnsupportedDataTypeException;
 
 }

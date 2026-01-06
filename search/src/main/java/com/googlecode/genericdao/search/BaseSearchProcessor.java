@@ -14,21 +14,13 @@
  */
 package com.googlecode.genericdao.search;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.activation.UnsupportedDataTypeException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class provides two methods for generating query language to fulfill an
@@ -58,7 +50,7 @@ import javax.activation.UnsupportedDataTypeException;
  */
 public abstract class BaseSearchProcessor {
 
-	private static Logger logger = LoggerFactory.getLogger(BaseSearchProcessor.class);
+	private static final Logger logger = LoggerFactory.getLogger(BaseSearchProcessor.class);
 
 	protected static int QLTYPE_HQL = 0;
 	protected static int QLTYPE_EQL = 1;
@@ -97,6 +89,17 @@ public abstract class BaseSearchProcessor {
 		this.rootAlias = alias;
 	}
 
+	private static int getValueIndex(String expression, List<?> values, Matcher matcher) {
+		int valueIndex = Integer.parseInt(expression.substring(matcher.start() + 1, matcher.end()));
+		if (valueIndex == 0) {
+			throw new IllegalArgumentException("This custom filter expression (" + expression + ") contains a value placeholder for zero (?0), but placeholders should be numbered starting at ?1.");
+		}
+		if (values == null || values.isEmpty()) {
+			throw new IllegalArgumentException("This custom filter expression (" + expression + ") calls for a value placeholder number " + valueIndex + ", but no values were specified.");
+		}
+		return valueIndex;
+	}
+
 	/**
 	 * Generate the QL string for a given search. Fill paramList with the values
 	 * to be used for the query. All parameters within the query string are
@@ -110,96 +113,20 @@ public abstract class BaseSearchProcessor {
 		SearchContext ctx = new SearchContext(entityClass, rootAlias, paramList);
 
 		List<Field> fields = checkAndCleanFields(search.getFields());
-		
+
 		applyFetches(ctx, checkAndCleanFetches(search.getFetches()), fields);
-		
+
 		String select = generateSelectClause(ctx, fields, search.isDistinct());
 		String where = generateWhereClause(ctx, checkAndCleanFilters(search.getFilters()), search.isDisjunction());
 		String orderBy = generateOrderByClause(ctx, checkAndCleanSorts(search.getSorts()));
 		String from = generateFromClause(ctx, true);
 
-		StringBuilder sb = new StringBuilder();
-		sb.append(select);
-		sb.append(from);
-		sb.append(where);
-		sb.append(orderBy);
-
-		String query = sb.toString();
+		String query = select +
+				from +
+				where +
+				orderBy;
 		if (logger.isDebugEnabled())
 			logger.debug("generateQL:\n  " + query);
-		return query;
-	}
-
-	/**
-	 * Generate the QL string that will query the total number of results from a
-	 * given search (paging is ignored). Fill paramList with the values to be
-	 * used for the query. All parameters within the query string are specified
-	 * as named parameters ":pX", where X is the index of the parameter value in
-	 * paramList.
-	 * 
-	 * <b>NOTE:</b> Returns null if column operators are used in the search.
-	 * Such a search will always return 1 row.
-	 */
-	public String generateRowCountQL(Class<?> entityClass, ISearch search, List<Object> paramList) {
-		if (entityClass == null)
-			throw new NullPointerException("The entity class for a search cannot be null");
-
-		SearchContext ctx = new SearchContext(entityClass, rootAlias, paramList);
-
-		String where = generateWhereClause(ctx, checkAndCleanFilters(search.getFilters()), search.isDisjunction());
-		String from = generateFromClause(ctx, false);
-
-		boolean useOperator = false, notUseOperator = false;
-		List<Field> fields = search.getFields();
-		if (fields != null) {
-			for (Field field : fields) {
-				switch (field.getOperator()) {
-				case Field.OP_AVG:
-				case Field.OP_COUNT:
-				case Field.OP_COUNT_DISTINCT:
-				case Field.OP_MAX:
-				case Field.OP_MIN:
-				case Field.OP_SUM:
-					useOperator = true;
-					break;
-				default:
-					notUseOperator = true;
-					break;
-				}
-			}
-		}
-		if (useOperator && notUseOperator) {
-			throw new Error("A search can not have a mix of fields with operators and fields without operators.");
-		} else if (useOperator) {
-			return null; // if we're using column operators, the query will
-							// always return 1 result.
-		}
-
-		StringBuilder sb = new StringBuilder();
-		if (!search.isDistinct()) {
-			sb.append("select count(").append(rootAlias).append(")");
-		} else if (fields.size() == 0) {
-			sb.append("select count(distinct ");
-			sb.append(rootAlias).append(")");
-		} else if (fields.size() == 1) {
-			sb.append("select count(distinct ");
-			String prop = fields.get(0).getProperty();
-			if (prop == null || "".equals(prop)) {
-				sb.append(ctx.getRootAlias());
-			} else {
-				sb.append(getPathRef(ctx, prop));
-			}
-			sb.append(")");
-		} else {
-			throw new IllegalArgumentException("Unfortunately, Hibernate Generic DAO does not currently support "
-					+ "the count operation on a search that has distinct set with multiple fields.");
-		}
-		sb.append(from);
-		sb.append(where);
-
-		String query = sb.toString();
-		if (logger.isDebugEnabled())
-			logger.debug("generateRowCountQL:\n  " + query);
 		return query;
 	}
 
@@ -295,6 +222,76 @@ public abstract class BaseSearchProcessor {
 	}
 
 	/**
+	 * Generate the QL string that will query the total number of results from a
+	 * given search (paging is ignored). Fill paramList with the values to be
+	 * used for the query. All parameters within the query string are specified
+	 * as named parameters ":pX", where X is the index of the parameter value in
+	 * paramList.
+	 * <br>
+	 * <b>NOTE:</b> Returns null if column operators are used in the search.
+	 * Such a search will always return 1 row.
+	 */
+	public String generateRowCountQL(Class<?> entityClass, ISearch search, List<Object> paramList) {
+		if (entityClass == null)
+			throw new NullPointerException("The entity class for a search cannot be null");
+
+		SearchContext ctx = new SearchContext(entityClass, rootAlias, paramList);
+
+		String where = generateWhereClause(ctx, checkAndCleanFilters(search.getFilters()), search.isDisjunction());
+		String from = generateFromClause(ctx, false);
+
+		boolean useOperator = false, notUseOperator = false;
+		List<Field> fields = search.getFields();
+		if (fields != null) {
+			for (Field field : fields) {
+				switch (field.getOperator()) {
+				case Field.OP_AVG:
+				case Field.OP_COUNT:
+				case Field.OP_COUNT_DISTINCT:
+				case Field.OP_MAX:
+				case Field.OP_MIN:
+				case Field.OP_SUM:
+					useOperator = true;
+					break;
+				default:
+					notUseOperator = true;
+					break;
+				}
+			}
+		}
+		if (useOperator && notUseOperator) {
+			throw new Error("A search can not have a mix of fields with operators and fields without operators.");
+		} else if (useOperator) {
+			return null; // if we're using column operators, the query will
+							// always return 1 result.
+		}
+
+		StringBuilder sb = new StringBuilder();
+		if (!search.isDistinct()) {
+			sb.append("select count(").append(rootAlias).append(")");
+		} else if (fields != null && fields.isEmpty()) {
+			sb.append("select count(distinct ");
+			sb.append(rootAlias).append(")");
+		} else if (fields != null && fields.size() == 1) {
+			sb.append("select count(distinct ");
+			String prop = fields.get(0).getProperty();
+			if (prop == null || prop.isEmpty()) {
+				sb.append(ctx.getRootAlias());
+			} else {
+				sb.append(getPathRef(ctx, prop));
+			}
+			sb.append(")");
+		}
+		sb.append(from);
+		sb.append(where);
+
+		String query = sb.toString();
+		if (logger.isDebugEnabled())
+			logger.debug("generateRowCountQL:\n  " + query);
+		return query;
+	}
+
+	/**
 	 * Apply the fetch list to the alias tree in the search context.
 	 */
 	protected void applyFetches(SearchContext ctx, List<String> fetches, List<Field> fields) {
@@ -308,7 +305,7 @@ public abstract class BaseSearchProcessor {
 			if (hasFetches && fields != null) {
 				// don't fetch nodes whose ancestors aren't found in the select
 				// clause
-				List<String> fieldProps = new ArrayList<String>();
+				List<String> fieldProps = new ArrayList<>();
 				for (Field field : fields) {
 					if (field.getOperator() == Field.OP_PROPERTY) {
 						fieldProps.add(field.getProperty() + ".");
@@ -345,49 +342,11 @@ public abstract class BaseSearchProcessor {
 	 * using eager fetching, <code>applyFetches()</code> must be executed first.
 	 */
 	protected String generateFromClause(SearchContext ctx, boolean doEagerFetching) {
-		StringBuilder sb = new StringBuilder(" from ");
-		
-		sb.append(getMetadataUtil().get(ctx.rootClass).getEntityName());
-		sb.append(" ");
-		sb.append(ctx.getRootAlias());
-		sb.append(generateJoins(ctx, doEagerFetching));
-		return sb.toString();
-	}
 
-	/**
-	 * Internal method for generating the join portion of the from clause. This
-	 * method should be called after generating other clauses because it relies
-	 * on the aliases they create. This method takes every path that is called
-	 * for in the other clauses and makes it available as an alias using left
-	 * joins. It also adds join fetching for properties specified by
-	 * <code>fetches</code> if <code>doEagerFetching</code> is <code>true</code>
-	 * . <b>NOTE:</b> When using eager fetching, <code>applyFetches()</code>
-	 * must be executed first.
-	 */
-	protected String generateJoins(SearchContext ctx, boolean doEagerFetching) {
-		StringBuilder sb = new StringBuilder();
-
-		// traverse alias graph breadth-first
-		Queue<AliasNode> queue = new LinkedList<AliasNode>();
-		queue.offer(ctx.aliases.get(ROOT_PATH));
-		while (!queue.isEmpty()) {
-			AliasNode node = queue.poll();
-			if (node.parent != null) {
-				sb.append(" left join ");
-				if (doEagerFetching && node.fetch)
-					sb.append("fetch ");
-				sb.append(node.parent.alias);
-				sb.append(".");
-				sb.append(node.property);
-				sb.append(" as ");
-				sb.append(node.alias);
-			}
-			for (AliasNode child : node.children) {
-				queue.offer(child);
-			}
-		}
-
-		return sb.toString();
+		return " from " + getMetadataUtil().get(ctx.rootClass).getEntityName() +
+				" " +
+				ctx.getRootAlias() +
+				generateJoins(ctx, doEagerFetching);
 	}
 
 	/**
@@ -427,12 +386,48 @@ public abstract class BaseSearchProcessor {
 	}
 
 	/**
+	 * Internal method for generating the join portion of the from clause. This
+	 * method should be called after generating other clauses because it relies
+	 * on the aliases they create. This method takes every path that is called
+	 * for in the other clauses and makes it available as an alias using left
+	 * joins. It also adds join fetching for properties specified by
+	 * <code>fetches</code> if <code>doEagerFetching</code> is <code>true</code>
+	 * . <b>NOTE:</b> When using eager fetching, <code>applyFetches()</code>
+	 * must be executed first.
+	 */
+	protected String generateJoins(SearchContext ctx, boolean doEagerFetching) {
+		StringBuilder sb = new StringBuilder();
+
+		// traverse alias graph breadth-first
+		Queue<AliasNode> queue = new LinkedList<>();
+		queue.offer(ctx.aliases.get(ROOT_PATH));
+		while (!queue.isEmpty()) {
+			AliasNode node = queue.poll();
+			if (node.parent != null) {
+				sb.append(" left join ");
+				if (doEagerFetching && node.fetch)
+					sb.append("fetch ");
+				sb.append(node.parent.alias);
+				sb.append(".");
+				sb.append(node.property);
+				sb.append(" as ");
+				sb.append(node.alias);
+			}
+			for (AliasNode child : node.children) {
+				queue.offer(child);
+			}
+		}
+
+		return sb.toString();
+	}
+
+	/**
 	 * Internal method for generating where clause for given search. Uses filter
 	 * options from search.
 	 */
 	protected String generateWhereClause(SearchContext ctx, List<Filter> filters, boolean isDisjunction) {
-		String content = null;
-		if (filters == null || filters.size() == 0) {
+		String content;
+		if (filters == null || filters.isEmpty()) {
 			return "";
 		} else if (filters.size() == 1) {
 			content = filterToQL(ctx, filters.get(0));
@@ -447,7 +442,6 @@ public abstract class BaseSearchProcessor {
 	/**
 	 * Recursively generate the QL fragment for a given search filter option.
 	 */
-	@SuppressWarnings("unchecked")
 	protected String filterToQL(SearchContext ctx, Filter filter) {
 		String property = filter.getProperty();
 		Object value = filter.getValue();
@@ -456,7 +450,7 @@ public abstract class BaseSearchProcessor {
 		// for IN and NOT IN, if value is empty list, return false, and true
 		// respectively
 		if (operator == Filter.OP_IN || operator == Filter.OP_NOT_IN) {
-			if (value instanceof Collection && ((Collection) value).size() == 0) {
+			if (value instanceof Collection && ((Collection) value).isEmpty()) {
 				return operator == Filter.OP_IN ? "1 = 2" : "1 = 1";
 			}
 			if (value instanceof Object[] && ((Object[]) value).length == 0) {
@@ -558,7 +552,7 @@ public abstract class BaseSearchProcessor {
 		case Filter.OP_SOME:
 			if (!(value instanceof Filter)) {
 				return null;
-			} else if (value instanceof Filter) {
+			} else {
 				String simple = generateSimpleAllOrSome(ctx, property, (Filter) value, "some");
 				if (simple != null) {
 					return simple;
@@ -569,7 +563,7 @@ public abstract class BaseSearchProcessor {
 		case Filter.OP_ALL:
 			if (!(value instanceof Filter)) {
 				return null;
-			} else if (value instanceof Filter) {
+			} else {
 				String simple = generateSimpleAllOrSome(ctx, property, (Filter) value, "all");
 				if (simple != null) {
 					return simple;
@@ -580,7 +574,7 @@ public abstract class BaseSearchProcessor {
 		case Filter.OP_NONE:
 			if (!(value instanceof Filter)) {
 				return null;
-			} else if (value instanceof Filter) {
+			} else {
 				// NOTE: Using "all" for the simple all or some is logically
 				// incorrect. It should be "some". However,
 				// because of a bug in how Hibernate 3.1.1 tries to simplify
@@ -610,7 +604,7 @@ public abstract class BaseSearchProcessor {
 	/**
 	 * Generate a QL string for a subquery on the given property that uses the
 	 * given filter. This is used by SOME, ALL and NONE filters.
-	 * 
+	 *
 	 * @param ctx
 	 *            - a new context just for this sub-query
 	 * @param property
@@ -627,87 +621,20 @@ public abstract class BaseSearchProcessor {
 		ctx2.nextAliasNum = ctx.nextAliasNum;
 		ctx2.nextSubqueryNum = ctx.nextSubqueryNum;
 
-		List<Filter> filters = new ArrayList<Filter>(1);
+		List<Filter> filters = new ArrayList<>(1);
 		filters.add(filter);
 		String where = generateWhereClause(ctx2, filters, false);
 		String joins = generateJoins(ctx2, false);
 		ctx.nextAliasNum = ctx2.nextAliasNum;
 		ctx.nextSubqueryNum = ctx2.nextSubqueryNum;
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("(from ");
-		sb.append(getPathRef(ctx, property));
-		sb.append(" ");
-		sb.append(ctx2.getRootAlias());
-		sb.append(joins);
-		sb.append(where);
-		sb.append(")");
-
-		return sb.toString();
-	}
-
-	/**
-	 * <p>
-	 * In the case of simple ALL/SOME/NONE filters, a simpler hql syntax is used
-	 * (which is also compatible with collections of values). Simple filters
-	 * include ALL/SOME/NONE filters with exactly one sub-filter where that
-	 * filter applies to the elements of the collection directly (as opposed to
-	 * their properties) and the operator is =, !=, <, <=, >, or >=.
-	 * 
-	 * <p>
-	 * For example:
-	 * 
-	 * <pre>
-	 * Filter.some(&quot;some_collection_of_strings&quot;, Filter.equal(&quot;&quot;, &quot;Bob&quot;)
-	 * Filter.all(&quot;some_collection_of_numbers&quot;, Filter.greaterThan(null, 23)
-	 * </pre>
-	 * 
-	 * If the filter meets these criteria as a simple ALL/SOME/NONE filter, the
-	 * QL string for the filter will be returned. If not, <code>null</code> is
-	 * returned.
-	 * 
-	 * @param ctx
-	 *            - the context of the SOME/ALL/NONE filter
-	 * @param property
-	 *            - the property of the SOME/ALL/NONE filter
-	 * @param filter
-	 *            - the sub-filter that is the value of the SOME/ALL/NONE filter
-	 * @param operation
-	 *            - a string used to fill in the collection operation. The value
-	 *            should be either "some" or "all".
-	 */
-	protected String generateSimpleAllOrSome(SearchContext ctx, String property, Filter filter, String operation) {
-		if (filter.getProperty() != null && !filter.getProperty().equals(""))
-			return null;
-
-		String op;
-
-		switch (filter.getOperator()) {
-		case Filter.OP_EQUAL:
-			op = " = ";
-			break;
-		case Filter.OP_NOT_EQUAL:
-			op = " != ";
-			break;
-		case Filter.OP_LESS_THAN:
-			op = " > ";
-			break;
-		case Filter.OP_LESS_OR_EQUAL:
-			op = " >= ";
-			break;
-		case Filter.OP_GREATER_THAN:
-			op = " < ";
-			break;
-		case Filter.OP_GREATER_OR_EQUAL:
-			op = " <= ";
-			break;
-		default:
-			return null;
-		}
-
-		Object value = InternalUtil.convertIfNeeded(filter.getValue(), metadataUtil.get(ctx.rootClass, property)
-				.getJavaClass());
-		return param(ctx, value) + op + operation + " elements(" + getPathRef(ctx, property) + ")";
+		return "(from " +
+				getPathRef(ctx, property) +
+				" " +
+				ctx2.getRootAlias() +
+				joins +
+				where +
+				")";
 	}
 
 	/**
@@ -719,7 +646,6 @@ public abstract class BaseSearchProcessor {
 	 *            example with IN and NOT_IN operators.
 	 * @return the converted value.
 	 */
-	@SuppressWarnings("unchecked")
 	protected Object prepareValue(Class<?> rootClass, String property, Object value, boolean isCollection) {
 		if (value == null)
 			return null;
@@ -785,40 +711,99 @@ public abstract class BaseSearchProcessor {
 	}
 	
 	/**
+	 * <p>
+	 * In the case of simple ALL/SOME/NONE filters, a simpler hql syntax is used
+	 * (which is also compatible with collections of values). Simple filters
+	 * include ALL/SOME/NONE filters with exactly one sub-filter where that
+	 * filter applies to the elements of the collection directly (as opposed to
+	 * their properties) and the operator is =, !=, {@code <}, {@code <=},
+	 * {@code >}, or {@code >=}.
+	 *
+	 * <p>
+	 * For example:
+	 *
+	 * <pre>
+	 * Filter.some(&quot;some_collection_of_strings&quot;, Filter.equal(&quot;&quot;, &quot;Bob&quot;)
+	 * Filter.all(&quot;some_collection_of_numbers&quot;, Filter.greaterThan(null, 23)
+	 * </pre>
+	 *
+	 * If the filter meets these criteria as a simple ALL/SOME/NONE filter, the
+	 * QL string for the filter will be returned. If not, <code>null</code> is
+	 * returned.
+	 *
+	 * @param ctx
+	 *            - the context of the SOME/ALL/NONE filter
+	 * @param property
+	 *            - the property of the SOME/ALL/NONE filter
+	 * @param filter
+	 *            - the sub-filter that is the value of the SOME/ALL/NONE filter
+	 * @param operation
+	 *            - a string used to fill in the collection operation. The value
+	 *            should be either "some" or "all".
+	 */
+	protected String generateSimpleAllOrSome(SearchContext ctx, String property, Filter filter, String operation) {
+		if (filter.getProperty() != null && !filter.getProperty().isEmpty())
+			return null;
+
+		String op;
+
+		switch (filter.getOperator()) {
+		case Filter.OP_EQUAL:
+			op = " = ";
+			break;
+		case Filter.OP_NOT_EQUAL:
+			op = " != ";
+			break;
+		case Filter.OP_LESS_THAN:
+			op = " > ";
+			break;
+		case Filter.OP_LESS_OR_EQUAL:
+			op = " >= ";
+			break;
+		case Filter.OP_GREATER_THAN:
+			op = " < ";
+			break;
+		case Filter.OP_GREATER_OR_EQUAL:
+			op = " <= ";
+			break;
+		default:
+			return null;
+		}
+
+		Object value = InternalUtil.convertIfNeeded(filter.getValue(), metadataUtil.get(ctx.rootClass, property)
+				.getJavaClass());
+		return param(ctx, value) + op + operation + " elements(" + getPathRef(ctx, property) + ")";
+	}
+	
+	/**
 	 * append a custom expression to the string builder, replacing any
-	 * property tokens (i.e "{prop}") with a reference to the property. 
+	 * property tokens (i.e "{prop}") with a reference to the property.
 	 */
 	protected void appendCustomExpression(StringBuilder sb, SearchContext ctx, String expression) {
 		Matcher matcher = Pattern.compile("\\{[\\w\\.]*\\}").matcher(expression);
 		int lastEnd = 0;
 		while (matcher.find()) {
-			sb.append(expression.substring(lastEnd, matcher.start()));
+			sb.append(expression, lastEnd, matcher.start());
 			sb.append(getPathRef(ctx, expression.substring(matcher.start() + 1, matcher.end() - 1)));
 			lastEnd = matcher.end();
 		}
 		sb.append(expression.substring(lastEnd));
 	}
-	
+
 	/**
 	 * append a custom expression to the string builder, replacing any
 	 * property tokens (i.e "{prop}") with a reference to the property and
-	 * value tokens (i.e. "?n") with params. 
+	 * value tokens (i.e. "?n") with params.
 	 */
 	protected void appendCustomExpression(StringBuilder sb, SearchContext ctx, String expression, List<?> values) {
 		Matcher matcher = Pattern.compile("(\\{[\\w\\.]*\\})|(\\?\\d+\\b)").matcher(expression);
 		int lastEnd = 0;
 		while (matcher.find()) {
-			sb.append(expression.substring(lastEnd, matcher.start()));
+			sb.append(expression, lastEnd, matcher.start());
 			if (expression.charAt(matcher.start()) == '{') {
 				sb.append(getPathRef(ctx, expression.substring(matcher.start() + 1, matcher.end() - 1)));
 			} else {
-				int valueIndex = Integer.valueOf(expression.substring(matcher.start() + 1, matcher.end()));
-				if (valueIndex == 0) {
-					throw new IllegalArgumentException("This custom filter expression (" + expression + ") contains a value placeholder for zero (?0), but placeholders should be numbered starting at ?1.");
-				}
-				if (values == null || values.isEmpty()) {
-					throw new IllegalArgumentException("This custom filter expression (" + expression + ") calls for a value placeholder number " + valueIndex + ", but no values were specified.");
-				}
+				int valueIndex = getValueIndex(expression, values, matcher);
 				if (valueIndex > values.size()) {
 					throw new IllegalArgumentException("This custom filter expression (" + expression + ") calls for a value placeholder number " + valueIndex + ", but only " + values.size() + " values were specified.");
 				}
@@ -848,7 +833,7 @@ public abstract class BaseSearchProcessor {
 				}
 				ctx.paramList.add(o);
 				sb.append(":p");
-				sb.append(Integer.toString(ctx.paramList.size()));
+				sb.append(ctx.paramList.size());
 			}
 			return sb.toString();
 		} else if (value instanceof Object[]) {
@@ -862,12 +847,12 @@ public abstract class BaseSearchProcessor {
 				}
 				ctx.paramList.add(o);
 				sb.append(":p");
-				sb.append(Integer.toString(ctx.paramList.size()));
+				sb.append(ctx.paramList.size());
 			}
 			return sb.toString();
 		} else {
 			ctx.paramList.add(value);
-			return ":p" + Integer.toString(ctx.paramList.size());
+			return ":p" + ctx.paramList.size();
 		}
 	}
 
@@ -877,7 +862,7 @@ public abstract class BaseSearchProcessor {
 	 * a4_manager.salary).
 	 */
 	protected String getPathRef(SearchContext ctx, String path) {
-		if (path == null || "".equals(path)) {
+		if (path == null || path.isEmpty()) {
 			return ctx.getRootAlias();
 		}
 
@@ -892,7 +877,7 @@ public abstract class BaseSearchProcessor {
 	 * (department.manager.salary) would return [department.manager, salary].
 	 */
 	protected String[] splitPath(SearchContext ctx, String path) {
-		if (path == null || "".equals(path))
+		if (path == null || path.isEmpty())
 			return null;
 
 		int pos = path.lastIndexOf('.');
@@ -923,14 +908,11 @@ public abstract class BaseSearchProcessor {
 					// segment), we're done
 					return new String[] { currentPath, path.substring(currentPath.length() + 1) };
 				}
-				first = false;
 
 				// For size, we need to go back to the 'first' behavior
 				// for the next segment.
-				if (pos != -1 && lastSegment.equals("size")
-						&& metadataUtil.get(ctx.rootClass, currentPath.substring(0, pos)).isCollection()) {
-					first = true;
-				}
+				first = pos != -1 && lastSegment.equals("size")
+						&& metadataUtil.get(ctx.rootClass, currentPath.substring(0, pos)).isCollection();
 
 				// if that was the last segment, we're done
 				if (pos == -1) {
@@ -1002,7 +984,7 @@ public abstract class BaseSearchProcessor {
 	 * @return the associated AliasNode or <code>null</code> if none.
 	 */
 	protected AliasNode getAliasForPathIfItExists(SearchContext ctx, String path) {
-		if (path == null || path.equals("")) {
+		if (path == null || path.isEmpty()) {
 			return ctx.aliases.get(ROOT_PATH);
 		} else {
 			return ctx.aliases.get(path);
@@ -1016,116 +998,6 @@ public abstract class BaseSearchProcessor {
 		}
 	}
 
-	protected static final class AliasNode {
-		String property;
-		String alias;
-		boolean fetch;
-		AliasNode parent;
-		List<AliasNode> children = new ArrayList<AliasNode>();
-
-		AliasNode(String property, String alias) {
-			this.property = property;
-			this.alias = alias;
-		}
-
-		void addChild(AliasNode node) {
-			children.add(node);
-			node.parent = this;
-		}
-
-		public String getFullPath() {
-			if (parent == null)
-				return "";
-			else if (parent.parent == null)
-				return property;
-			else
-				return parent.getFullPath() + "." + property;
-		}
-	}
-
-	protected static final class SearchContext {
-		Class<?> rootClass;
-		Map<String, AliasNode> aliases = new HashMap<String, AliasNode>();
-		List<Object> paramList;
-
-		int nextAliasNum = 1;
-		int nextSubqueryNum = 1;
-
-		public SearchContext() {
-		}
-
-		public SearchContext(Class<?> rootClass, String rootAlias, List<Object> paramList) {
-			this.rootClass = rootClass;
-			setRootAlias(rootAlias);
-			this.paramList = paramList;
-		}
-
-		public void setRootAlias(String rootAlias) {
-			this.aliases.put(ROOT_PATH, new AliasNode(ROOT_PATH, rootAlias));
-		}
-
-		public String getRootAlias() {
-			return this.aliases.get(ROOT_PATH).alias;
-		}
-	}
-
-	// ---- SECURITY CHECK ---- //
-
-	/**
-	 * <ol>
-	 * <li>Check for injection attack in property strings. <li>The field list
-	 * may not contain nulls.
-	 * </ol>
-	 */
-	protected List<Field> checkAndCleanFields(List<Field> fields) {
-		if (fields == null)
-			return null;
-
-		for (Field field : fields) {
-			if (field == null) {
-				throw new IllegalArgumentException("The search contains a null field.");
-			}
-			if (field.getProperty() != null && field.getOperator() != Field.OP_CUSTOM)
-				securityCheckProperty(field.getProperty());
-		}
-
-		return fields;
-	}
-
-	/**
-	 * <ol>
-	 * <li>Check for injection attack in property strings. <li>Remove null
-	 * fetches from the list.
-	 * </ol>
-	 */
-	protected List<String> checkAndCleanFetches(List<String> fetches) {
-		return SearchUtil.walkList(fetches, new SearchUtil.ItemVisitor<String>() {
-			@Override
-			public String visit(String fetch) {
-				securityCheckProperty(fetch);
-				return fetch;
-			}
-		}, true);
-	}
-
-	/**
-	 * <ol>
-	 * <li>Check for injection attack in property strings. <li>Remove null sorts
-	 * from the list.
-	 * </ol>
-	 */
-	protected List<Sort> checkAndCleanSorts(List<Sort> sorts) {
-		return SearchUtil.walkList(sorts, new SearchUtil.ItemVisitor<Sort>() {
-			@Override
-			public Sort visit(Sort sort) {
-				if (!sort.isCustomExpression()) {
-					securityCheckProperty(sort.getProperty());
-				}
-				return sort;
-			}
-		}, true);
-	}
-
 	/**
 	 * <ol>
 	 * <li>Check for injection attack in property strings. <li>Check for values
@@ -1137,19 +1009,18 @@ public abstract class BaseSearchProcessor {
 	 */
 	protected List<Filter> checkAndCleanFilters(List<Filter> filters) {
 		return SearchUtil.walkFilters(filters, new SearchUtil.FilterVisitor() {
-			@SuppressWarnings("unchecked")
 			@Override
 			public Filter visitBefore(Filter filter) {
 				if (filter == null) {
 					return null;
 				}
-				
+
 				// If the operator needs a value and no value is specified, ignore this filter.
 				// Only NULL, NOT_NULL, EMPTY, NOT_EMPTY and CUSTOM do not need a value.
 				if (filter.getValue() == null && !filter.isTakesNoValue()) {
 					return null;
 				}
-				
+
 				if (filter.getValue() != null) {
 					if (filter.isTakesListOfSubFilters()) {
 						// make sure that filters that take lists of filters
@@ -1211,7 +1082,7 @@ public abstract class BaseSearchProcessor {
 						return null;
 					} else {
 						List<Filter> list = (List<Filter>) filter.getValue();
-						if (list.size() == 0) {
+						if (list.isEmpty()) {
 							return null;
 						} else if (list.size() == 1) {
 							return list.get(0);
@@ -1222,6 +1093,137 @@ public abstract class BaseSearchProcessor {
 				return filter;
 			}
 		}, true);
+	}
+
+	public Filter getFilterFromExample(Object example, ExampleOptions options) throws UnsupportedDataTypeException {
+		if (example == null)
+			return null;
+		if (options == null)
+			options = defaultExampleOptions;
+
+		List<Filter> filters = new ArrayList<>();
+		LinkedList<String> path = new LinkedList<>();
+		Metadata metadata = metadataUtil.get(example.getClass());
+		getFilterFromExampleRecursive(example, metadata, options, path, filters);
+
+		if (filters.isEmpty()) {
+			return null;
+		} else if (filters.size() == 1) {
+			return filters.get(0);
+		} else {
+			return new Filter("AND", filters, Filter.OP_AND);
+		}
+	}
+
+	// ---- SECURITY CHECK ---- //
+
+	/**
+	 * <ol>
+	 * <li>Check for injection attack in property strings. <li>The field list
+	 * may not contain nulls.
+	 * </ol>
+	 */
+	protected List<Field> checkAndCleanFields(List<Field> fields) {
+		if (fields == null)
+			return null;
+
+		for (Field field : fields) {
+			if (field == null) {
+				throw new IllegalArgumentException("The search contains a null field.");
+			}
+			if (field.getProperty() != null && field.getOperator() != Field.OP_CUSTOM)
+				securityCheckProperty(field.getProperty());
+		}
+
+		return fields;
+	}
+
+	/**
+	 * <ol>
+	 * <li>Check for injection attack in property strings. <li>Remove null
+	 * fetches from the list.
+	 * </ol>
+	 */
+	protected List<String> checkAndCleanFetches(List<String> fetches) {
+		return SearchUtil.walkList(fetches, new SearchUtil.ItemVisitor<String>() {
+			@Override
+			public String visit(String fetch) {
+				securityCheckProperty(fetch);
+				return fetch;
+			}
+		}, true);
+	}
+
+	/**
+	 * <ol>
+	 * <li>Check for injection attack in property strings. <li>Remove null sorts
+	 * from the list.
+	 * </ol>
+	 */
+	protected List<Sort> checkAndCleanSorts(List<Sort> sorts) {
+		return SearchUtil.walkList(sorts, new SearchUtil.ItemVisitor<Sort>() {
+			@Override
+			public Sort visit(Sort sort) {
+				if (!sort.isCustomExpression()) {
+					securityCheckProperty(sort.getProperty());
+				}
+				return sort;
+			}
+		}, true);
+	}
+
+	private void getFilterFromExampleRecursive(Object example, Metadata metadata, ExampleOptions options,
+			LinkedList<String> path, List<Filter> filters) throws UnsupportedDataTypeException {
+		if (metadata.isEntity() && !metadata.getIdType().isEmbeddable()) {
+			Object id = metadata.getIdValue(example);
+			if (id != null) {
+				filters.add(Filter.equal(listToPath(path, "id"), id));
+				return;
+			}
+		}
+
+		for (String property : metadata.getProperties()) {
+			if (options.getExcludeProps() != null && !options.getExcludeProps().isEmpty()) {
+				if (options.getExcludeProps().contains(listToPath(path, property)))
+					continue;
+			}
+
+			Metadata pMetadata = metadata.getPropertyType(property);
+			if (!pMetadata.isCollection()) {
+				Object value = metadata.getPropertyValue(example, property);
+				if (value == null) {
+					if (!options.isExcludeNulls()) {
+						filters.add(Filter.isNull(listToPath(path, property)));
+					}
+				} else {
+					if (!options.isExcludeZeros() || !(value instanceof Number) || ((Number) value).longValue() != 0) {
+						if (pMetadata.isEntity() || pMetadata.isEmbeddable()) {
+							path.add(property);
+							getFilterFromExampleRecursive(value, pMetadata, options, path, filters);
+							path.removeLast();
+						} else if (pMetadata.isString()
+								&& (options.getLikeMode() != ExampleOptions.EXACT || options.isIgnoreCase())) {
+							String val = value.toString();
+							switch (options.getLikeMode()) {
+								case ExampleOptions.START:
+									val = val + "%";
+									break;
+								case ExampleOptions.END:
+									val = "%" + val;
+									break;
+								case ExampleOptions.ANYWHERE:
+									val = "%" + val + "%";
+									break;
+							}
+							filters.add(new Filter(listToPath(path, property), val,
+									options.isIgnoreCase() ? Filter.OP_ILIKE : Filter.OP_LIKE));
+						} else {
+							filters.add(Filter.equal(listToPath(path, property), value));
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -1248,79 +1250,56 @@ public abstract class BaseSearchProcessor {
 		return getFilterFromExample(example, null);
 	}
 
-	public Filter getFilterFromExample(Object example, ExampleOptions options) throws UnsupportedDataTypeException {
-		if (example == null)
-			return null;
-		if (options == null)
-			options = defaultExampleOptions;
+	protected static final class AliasNode {
+		String property;
+		String alias;
+		boolean fetch;
+		AliasNode parent;
+		List<AliasNode> children = new ArrayList<>();
 
-		List<Filter> filters = new ArrayList<Filter>();
-		LinkedList<String> path = new LinkedList<String>();
-		Metadata metadata = metadataUtil.get(example.getClass());
-		getFilterFromExampleRecursive(example, metadata, options, path, filters);
+		AliasNode(String property, String alias) {
+			this.property = property;
+			this.alias = alias;
+		}
 
-		if (filters.size() == 0) {
-			return null;
-		} else if (filters.size() == 1) {
-			return filters.get(0);
-		} else {
-			return new Filter("AND", filters, Filter.OP_AND);
+		void addChild(AliasNode node) {
+			children.add(node);
+			node.parent = this;
+		}
+
+		public String getFullPath() {
+			if (parent == null)
+				return "";
+			else if (parent.parent == null)
+				return property;
+			else
+				return parent.getFullPath() + "." + property;
 		}
 	}
 
-	private void getFilterFromExampleRecursive(Object example, Metadata metadata, ExampleOptions options,
-			LinkedList<String> path, List<Filter> filters) throws UnsupportedDataTypeException {
-		if (metadata.isEntity() && !metadata.getIdType().isEmbeddable()) {
-			Object id = metadata.getIdValue(example);
-			if (id != null) {
-				filters.add(Filter.equal(listToPath(path, "id"), id));
-				return;
-			}
+	protected static final class SearchContext {
+		Class<?> rootClass;
+		Map<String, AliasNode> aliases = new HashMap<>();
+		List<Object> paramList;
+
+		int nextAliasNum = 1;
+		int nextSubqueryNum = 1;
+
+		public SearchContext() {
 		}
 
-		for (String property : metadata.getProperties()) {
-			if (options.getExcludeProps() != null && options.getExcludeProps().size() != 0) {
-				if (options.getExcludeProps().contains(listToPath(path, property)))
-					continue;
-			}
+		public SearchContext(Class<?> rootClass, String rootAlias, List<Object> paramList) {
+			this.rootClass = rootClass;
+			setRootAlias(rootAlias);
+			this.paramList = paramList;
+		}
 
-			Metadata pMetadata = metadata.getPropertyType(property);
-			if (pMetadata.isCollection()) {
-				// ignore collections
-			} else {
-				Object value = metadata.getPropertyValue(example, property);
-				if (value == null) {
-					if (!options.isExcludeNulls()) {
-						filters.add(Filter.isNull(listToPath(path, property)));
-					}
-				} else if (options.isExcludeZeros() && value instanceof Number && ((Number) value).longValue() == 0) {
-					// ignore zeros
-				} else {
-					if (pMetadata.isEntity() || pMetadata.isEmbeddable()) {
-						path.add(property);
-						getFilterFromExampleRecursive(value, pMetadata, options, path, filters);
-						path.removeLast();
-					} else if (pMetadata.isString()
-							&& (options.getLikeMode() != ExampleOptions.EXACT || options.isIgnoreCase())) {
-						String val = value.toString();
-						switch (options.getLikeMode()) {
-						case ExampleOptions.START:
-							val = val + "%";
-							break;
-						case ExampleOptions.END:
-							val = "%" + val;
-							break;
-						case ExampleOptions.ANYWHERE:
-							val = "%" + val + "%";
-							break;
-						}
-						filters.add(new Filter(listToPath(path, property), val,
-								options.isIgnoreCase() ? Filter.OP_ILIKE : Filter.OP_LIKE));
-					} else {
-						filters.add(Filter.equal(listToPath(path, property), value));
-					}
-				}
-			}
+		public void setRootAlias(String rootAlias) {
+			this.aliases.put(ROOT_PATH, new AliasNode(ROOT_PATH, rootAlias));
+		}
+
+		public String getRootAlias() {
+			return this.aliases.get(ROOT_PATH).alias;
 		}
 	}
 

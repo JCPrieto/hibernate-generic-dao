@@ -40,17 +40,17 @@ public class Search implements IMutableSearch, Serializable {
 
     protected Class<?> searchClass;
 
-    protected List<Filter> filters = new ArrayList<Filter>();
+    protected List<Filter> filters = new ArrayList<>();
 
     protected boolean disjunction;
 
-    protected List<Sort> sorts = new ArrayList<Sort>();
+    protected List<Sort> sorts = new ArrayList<>();
 
-    protected List<Field> fields = new ArrayList<Field>();
+    protected List<Field> fields = new ArrayList<>();
 
     protected boolean distinct;
 
-    protected List<String> fetches = new ArrayList<String>();
+    protected List<String> fetches = new ArrayList<>();
 
     protected int resultMode = RESULT_AUTO;
 
@@ -86,7 +86,7 @@ public class Search implements IMutableSearch, Serializable {
      * Add a filter that uses the == operator.
      */
     public Search addFilterEqual(String property, Object value) throws UnsupportedDataTypeException {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             throw new UnsupportedDataTypeException();
         }
         SearchUtil.addFilterEqual(this, property, value);
@@ -94,10 +94,10 @@ public class Search implements IMutableSearch, Serializable {
     }
 
     /**
-     * Add a filter that uses the >= operator.
+     * Add a filter that uses the {@code >=} operator.
      */
     public Search addFilterGreaterOrEqual(String property, Object value) throws UnsupportedDataTypeException {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             throw new UnsupportedDataTypeException();
         }
         SearchUtil.addFilterGreaterOrEqual(this, property, value);
@@ -105,10 +105,10 @@ public class Search implements IMutableSearch, Serializable {
     }
 
     /**
-     * Add a filter that uses the > operator.
+     * Add a filter that uses the {@code >} operator.
      */
     public Search addFilterGreaterThan(String property, Object value) throws UnsupportedDataTypeException {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             throw new UnsupportedDataTypeException();
         }
         SearchUtil.addFilterGreaterThan(this, property, value);
@@ -184,10 +184,10 @@ public class Search implements IMutableSearch, Serializable {
     }
 
     /**
-     * Add a filter that uses the <= operator.
+     * Add a filter that uses the {@code <=} operator.
      */
     public Search addFilterLessOrEqual(String property, Object value) throws UnsupportedDataTypeException {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             throw new UnsupportedDataTypeException();
         }
         SearchUtil.addFilterLessOrEqual(this, property, value);
@@ -195,10 +195,10 @@ public class Search implements IMutableSearch, Serializable {
     }
 
     /**
-     * Add a filter that uses the < operator.
+     * Add a filter that uses the {@code <} operator.
      */
     public Search addFilterLessThan(String property, Object value) throws UnsupportedDataTypeException {
-        if (value != null && value instanceof LocalDateTime) {
+        if (value instanceof LocalDateTime) {
             throw new UnsupportedDataTypeException();
         }
         SearchUtil.addFilterLessThan(this, property, value);
@@ -238,7 +238,7 @@ public class Search implements IMutableSearch, Serializable {
     }
 
     /**
-     * Add a filter that uses the >= operator.
+     * Add a filter that uses the {@code >=} operator.
      */
     public Search addFilterGreaterOrEqual(String property, Object value, ZoneId zoneId) {
         SearchUtil.addFilterGreaterOrEqual(this, property, value, zoneId);
@@ -246,7 +246,7 @@ public class Search implements IMutableSearch, Serializable {
     }
 
     /**
-     * Add a filter that uses the > operator.
+     * Add a filter that uses the {@code >} operator.
      */
     public Search addFilterGreaterThan(String property, Object value, ZoneId zoneId) {
         SearchUtil.addFilterGreaterThan(this, property, value, zoneId);
@@ -294,7 +294,7 @@ public class Search implements IMutableSearch, Serializable {
     }
 
     /**
-     * Add a filter that uses the <= operator.
+     * Add a filter that uses the {@code <=} operator.
      */
     public Search addFilterLessOrEqual(String property, Object value, ZoneId zoneId) {
         SearchUtil.addFilterLessOrEqual(this, property, value, zoneId);
@@ -302,7 +302,7 @@ public class Search implements IMutableSearch, Serializable {
     }
 
     /**
-     * Add a filter that uses the < operator.
+     * Add a filter that uses the {@code <} operator.
      */
     public Search addFilterLessThan(String property, Object value, ZoneId zoneId) {
         SearchUtil.addFilterLessThan(this, property, value, zoneId);
@@ -410,7 +410,7 @@ public class Search implements IMutableSearch, Serializable {
     /**
      * Add a filter that uses a custom expression.
      *
-     * @see {@link Filter#custom(String)}
+     * @see Filter#custom(String)
      */
     public Search addFilterCustom(String expression) {
         SearchUtil.addFilterCustom(this, expression);
@@ -420,7 +420,7 @@ public class Search implements IMutableSearch, Serializable {
     /**
      * Add a filter that uses a custom expression.
      *
-     * @see {@link Filter#custom(String, Object...)}
+     * @see Filter#custom(String, Object...)
      */
     public Search addFilterCustom(String expression, Object... values) {
         SearchUtil.addFilterCustom(this, expression, values);
@@ -430,7 +430,7 @@ public class Search implements IMutableSearch, Serializable {
     /**
      * Add a filter that uses a custom expression.
      *
-     * @see {@link Filter#custom(String, Collection)}
+     * @see Filter#custom(String, Collection)
      */
     public Search addFilterCustom(String expression, Collection<?> values) {
         SearchUtil.addFilterCustom(this, expression, values);
