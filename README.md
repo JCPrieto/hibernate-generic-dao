@@ -30,6 +30,64 @@ El proyecto propone una solucion con foco en simplicidad y consistencia:
 Nota: para JPA se requiere un adaptador por proveedor. Actualmente el adaptador incluido es para Hibernate Entity
 Manager.
 
+## Como usarlo en otros proyectos
+
+### Maven
+
+Elige los modulos que necesites y anadelos como dependencias. Ejemplos:
+
+Para Hibernate (Session) con DAO y Search:
+
+```xml
+
+<dependency>
+  <groupId>io.github.jcprieto</groupId>
+  <artifactId>dao-hibernate</artifactId>
+  <version>2.0.0</version>
+</dependency>
+```
+
+Para JPA con Search:
+
+```xml
+
+<dependency>
+  <groupId>io.github.jcprieto</groupId>
+  <artifactId>search-jpa-hibernate</artifactId>
+  <version>2.0.0</version>
+</dependency>
+```
+
+Si solo necesitas la capa de busqueda independiente:
+
+```xml
+
+<dependency>
+  <groupId>io.github.jcprieto</groupId>
+  <artifactId>search</artifactId>
+  <version>2.0.0</version>
+</dependency>
+```
+
+### Gradle
+
+```gradle
+dependencies {
+  implementation "io.github.jcprieto:dao-hibernate:2.0.0"
+  // o: implementation "io.github.jcprieto:search-jpa-hibernate:2.0.0"
+}
+```
+
+### Uso desde el codigo fuente
+
+Si prefieres consumir la libreria desde el codigo fuente, compila e instala en el repositorio local:
+
+```bash
+mvn clean install
+```
+
+Luego declara las dependencias anteriores usando la misma version.
+
 ## Changelog
 
 ### 2.0.0
