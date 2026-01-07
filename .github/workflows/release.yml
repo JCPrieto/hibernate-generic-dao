@@ -11,6 +11,7 @@ permissions:
 jobs:
   build-release:
     runs-on: ubuntu-latest
+    environment: release
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,7 +23,16 @@ jobs:
           java-version: "8"
           cache: maven
 
+      - name: Import GPG key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --pinentry-mode loopback --import
+          gpg --list-secret-keys --keyid-format LONG
+
       - name: Build and test
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: mvn clean verify
 
       - name: Collect artifacts
