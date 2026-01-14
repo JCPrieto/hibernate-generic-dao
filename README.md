@@ -43,7 +43,7 @@ Para Hibernate (Session) con DAO y Search:
 <dependency>
   <groupId>io.github.jcprieto</groupId>
   <artifactId>dao-hibernate</artifactId>
-  <version>2.0.0</version>
+  <version>2.0.1</version>
 </dependency>
 ```
 
@@ -54,7 +54,7 @@ Para JPA con Search:
 <dependency>
   <groupId>io.github.jcprieto</groupId>
   <artifactId>search-jpa-hibernate</artifactId>
-  <version>2.0.0</version>
+  <version>2.0.1</version>
 </dependency>
 ```
 
@@ -65,7 +65,7 @@ Si solo necesitas la capa de busqueda independiente:
 <dependency>
   <groupId>io.github.jcprieto</groupId>
   <artifactId>search</artifactId>
-  <version>2.0.0</version>
+  <version>2.0.1</version>
 </dependency>
 ```
 
@@ -73,8 +73,8 @@ Si solo necesitas la capa de busqueda independiente:
 
 ```gradle
 dependencies {
-  implementation "io.github.jcprieto:dao-hibernate:2.0.0"
-  // o: implementation "io.github.jcprieto:search-jpa-hibernate:2.0.0"
+  implementation "io.github.jcprieto:dao-hibernate:2.0.1"
+  // o: implementation "io.github.jcprieto:search-jpa-hibernate:2.0.1"
 }
 ```
 
@@ -89,6 +89,11 @@ mvn clean install
 Luego declara las dependencias anteriores usando la misma version.
 
 ## Changelog
+
+### 2.0.1
+
+- Ajustes de metadatos Hibernate para evitar API deprecada y mejorar proxies en Hibernate 5.6.
+- Nuevas pruebas unitarias en `search-hibernate`.
 
 ### 2.0.0
 

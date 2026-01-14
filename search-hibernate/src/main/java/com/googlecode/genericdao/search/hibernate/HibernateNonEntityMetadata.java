@@ -14,18 +14,17 @@
  */
 package com.googlecode.genericdao.search.hibernate;
 
-import java.io.Serializable;
-
+import com.googlecode.genericdao.search.Metadata;
 import org.hibernate.EntityMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.engine.spi.Mapping;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.type.CollectionType;
 import org.hibernate.type.ComponentType;
-import org.hibernate.type.EntityType;
 import org.hibernate.type.Type;
 
-import com.googlecode.genericdao.search.Metadata;
+import java.io.Serializable;
 
 /**
  * Implementation of Metadata for a non-entity type in Hibernate.
@@ -34,9 +33,9 @@ import com.googlecode.genericdao.search.Metadata;
  */
 public class HibernateNonEntityMetadata implements Metadata {
 
-	private SessionFactory sessionFactory;
-	private Type type;
-	private Class<?> collectionType;
+	private final SessionFactory sessionFactory;
+	private final Type type;
+	private final Class<?> collectionType;
 	
 	public HibernateNonEntityMetadata(SessionFactory sessionFactory, Type type, Class<?> collectionType) {
 		this.sessionFactory = sessionFactory;
@@ -86,7 +85,8 @@ public class HibernateNonEntityMetadata implements Metadata {
 				pCollectionType = pType.getReturnedClass();
 			}
 			if (pType.isEntityType()) {
-				return new HibernateEntityMetadata(sessionFactory, sessionFactory.getClassMetadata(((EntityType)pType).getName()), pCollectionType);
+				return new HibernateEntityMetadata(sessionFactory, getEntityPersister(pType.getName()),
+						pCollectionType);
 			} else {
 				return new HibernateNonEntityMetadata(sessionFactory, pType, pCollectionType);
 			}
@@ -138,5 +138,9 @@ public class HibernateNonEntityMetadata implements Metadata {
 			}
 		}
 		return -1;
+	}
+
+	private EntityPersister getEntityPersister(String entityName) {
+		return ((SessionFactoryImplementor) sessionFactory).getMetamodel().entityPersister(entityName);
 	}
 }

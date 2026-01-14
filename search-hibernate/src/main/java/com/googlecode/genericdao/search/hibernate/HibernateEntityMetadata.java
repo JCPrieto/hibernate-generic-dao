@@ -14,16 +14,14 @@
  */
 package com.googlecode.genericdao.search.hibernate;
 
-import java.io.Serializable;
-
+import com.googlecode.genericdao.search.Metadata;
 import org.hibernate.SessionFactory;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
-import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.type.CollectionType;
-import org.hibernate.type.EntityType;
 import org.hibernate.type.Type;
 
-import com.googlecode.genericdao.search.Metadata;
+import java.io.Serializable;
 
 /**
  * Implementation of Metadata for a Hibernate entity.
@@ -32,13 +30,13 @@ import com.googlecode.genericdao.search.Metadata;
  */
 public class HibernateEntityMetadata implements Metadata {
 
-	private SessionFactory sessionFactory;
-	private ClassMetadata metadata;
-	private Class<?> collectionType;
-	
-	public HibernateEntityMetadata(SessionFactory sessionFactory, ClassMetadata classMetadata, Class<?> collectionType) {
+	private final SessionFactory sessionFactory;
+	private final EntityPersister metadata;
+	private final Class<?> collectionType;
+
+	public HibernateEntityMetadata(SessionFactory sessionFactory, EntityPersister entityPersister, Class<?> collectionType) {
 		this.sessionFactory = sessionFactory;
-		this.metadata = classMetadata;
+		this.metadata = entityPersister;
 		this.collectionType = collectionType;
 	}
 	
@@ -66,9 +64,7 @@ public class HibernateEntityMetadata implements Metadata {
 		String[] pn = metadata.getPropertyNames();
 		String[] result = new String[pn.length + 1];
 		result[0] = metadata.getIdentifierPropertyName();
-		for (int i = 0; i < pn.length; i++) {
-			result[i+1] = pn[i];
-		}
+		System.arraycopy(pn, 0, result, 1, pn.length);
 		return result;
 	}
 
@@ -81,7 +77,8 @@ public class HibernateEntityMetadata implements Metadata {
 		}
 		
 		if (pType.isEntityType()) {
-			return new HibernateEntityMetadata(sessionFactory, sessionFactory.getClassMetadata(((EntityType)pType).getName()), pCollectionType);
+			return new HibernateEntityMetadata(sessionFactory, getEntityPersister(pType.getName()),
+					pCollectionType);
 		} else {
 			return new HibernateNonEntityMetadata(sessionFactory, pType, pCollectionType);
 		}
@@ -116,6 +113,10 @@ public class HibernateEntityMetadata implements Metadata {
 
 	public boolean isString() {
 		return false;
+	}
+
+	private EntityPersister getEntityPersister(String entityName) {
+		return ((SessionFactoryImplementor) sessionFactory).getMetamodel().entityPersister(entityName);
 	}
 
 }

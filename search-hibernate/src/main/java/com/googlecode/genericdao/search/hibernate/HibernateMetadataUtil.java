@@ -14,23 +14,23 @@
  */
 package com.googlecode.genericdao.search.hibernate;
 
+import com.googlecode.genericdao.search.Metadata;
+import com.googlecode.genericdao.search.MetadataUtil;
+import javassist.util.proxy.ProxyFactory;
+import org.hibernate.HibernateException;
+import org.hibernate.SessionFactory;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.persister.entity.EntityPersister;
+import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.proxy.HibernateProxyHelper;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import javassist.util.proxy.ProxyFactory;
-import org.hibernate.HibernateException;
-import org.hibernate.PropertyNotFoundException;
-import org.hibernate.SessionFactory;
-import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.proxy.HibernateProxyHelper;
-
-import com.googlecode.genericdao.search.Metadata;
-import com.googlecode.genericdao.search.MetadataUtil;
-
 /**
  * Implementation of MetadataUtil for Hibernate
- * 
+ * <br>
  * A singleton instance of this class is maintained for each SessionFactory.
  * This should be accessed using
  * {@link HibernateMetadataUtil#getInstanceForSessionFactory(SessionFactory)}.
@@ -39,7 +39,7 @@ import com.googlecode.genericdao.search.MetadataUtil;
  */
 public class HibernateMetadataUtil implements MetadataUtil {
 
-	private static Map<SessionFactory, HibernateMetadataUtil> map = new HashMap<SessionFactory, HibernateMetadataUtil>();
+	private static final Map<SessionFactory, HibernateMetadataUtil> map = new HashMap<>();
 
 	public static HibernateMetadataUtil getInstanceForSessionFactory(SessionFactory sessionFactory) {
 		HibernateMetadataUtil instance = map.get(sessionFactory);
@@ -61,11 +61,11 @@ public class HibernateMetadataUtil implements MetadataUtil {
 	public Serializable getId(Object entity) {
 		if (entity == null)
 			throw new NullPointerException("Cannot get ID from null object.");
-		return get(entity.getClass()).getIdValue(entity);
+		return get(getUnproxiedClass(entity)).getIdValue(entity);
 	}
 	
 	public boolean isId(Class<?> rootClass, String propertyPath) {
-		if (propertyPath == null || "".equals(propertyPath))
+		if (propertyPath == null || propertyPath.isEmpty())
 			return false;
 		// with hibernate, "id" always refers to the id property, no matter what
 		// that property is named. just make sure the segment before this "id"
@@ -84,31 +84,32 @@ public class HibernateMetadataUtil implements MetadataUtil {
 				return false;
 			return propertyPath.substring(pos + 1).equals(parentType.getIdProperty());
 		} else {
-			return propertyPath.equals(sessionFactory.getClassMetadata(rootClass).getIdentifierPropertyName());
+			EntityPersister persister = getEntityPersister(rootClass);
+			return persister != null && propertyPath.equals(persister.getIdentifierPropertyName());
 		}
 	}
 
 	public Metadata get(Class<?> entityClass) throws IllegalArgumentException {
 		entityClass = getUnproxiedClass(entityClass);
-		ClassMetadata cm = sessionFactory.getClassMetadata(entityClass);
-		if (cm == null) {
+		EntityPersister persister = getEntityPersister(entityClass);
+		if (persister == null) {
 			throw new IllegalArgumentException("Unable to introspect " + entityClass.toString()
 					+ ". The class is not a registered Hibernate entity.");
 		} else {
-			return new HibernateEntityMetadata(sessionFactory, cm, null);
+			return new HibernateEntityMetadata(sessionFactory, persister, null);
 		}
 	}
 
 	public Metadata get(Class<?> rootEntityClass, String propertyPath) throws IllegalArgumentException {
 		try {
 			Metadata md = get(rootEntityClass);
-			if (propertyPath == null || "".equals(propertyPath))
+			if (propertyPath == null || propertyPath.isEmpty())
 				return md;
 
 			String[] chain = propertyPath.split("\\.");
 
-			for (int i = 0; i < chain.length; i++) {
-				md = md.getPropertyType(chain[i]);
+			for (String s : chain) {
+				md = md.getPropertyType(s);
 			}
 
 			return md;
@@ -120,20 +121,37 @@ public class HibernateMetadataUtil implements MetadataUtil {
 	}
 	
 	public <T> Class<T> getUnproxiedClass(Class<?> klass) {
-		//cm will be null if entityClass is not registered with Hibernate or when
-		//it is a Hibernate proxy class (e.x. test.googlecode.genericdao.model.Person_$$_javassist_5).
-		//So if a class is not recognized, we will look at superclasses to see if
-		//it is a proxy.
-		while (ProxyFactory.isProxyClass(klass)) {
-			klass = klass.getSuperclass();
-			if (Object.class.equals(klass))
-				return null;
+		// cm will be null if entityClass is not registered with Hibernate or when
+		// it is a Hibernate proxy class (e.x. test.googlecode.genericdao.model.Person_$$_javassist_5).
+		// So if a class is not recognized, we will look at superclasses to see if
+		// it is a proxy.
+		while (klass != null && !Object.class.equals(klass)) {
+			if (ProxyFactory.isProxyClass(klass) || HibernateProxy.class.isAssignableFrom(klass)
+					|| isHibernateProxyClassName(klass)) {
+				klass = klass.getSuperclass();
+				continue;
+			}
+
+			return (Class<T>) klass;
 		}
-		
-		return (Class<T>) klass;
+
+		return null;
 	}
 	
 	public <T> Class<T> getUnproxiedClass(Object entity) {
 		return HibernateProxyHelper.getClassWithoutInitializingProxy(entity);
+	}
+
+	private boolean isHibernateProxyClassName(Class<?> klass) {
+		String name = klass.getName();
+		return name.contains("$HibernateProxy$");
+	}
+
+	private EntityPersister getEntityPersister(Class<?> entityClass) {
+		try {
+			return ((SessionFactoryImplementor) sessionFactory).getMetamodel().entityPersister(entityClass);
+		} catch (RuntimeException ex) {
+			return null;
+		}
 	}
 }
