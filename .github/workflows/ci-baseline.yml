@@ -1,0 +1,73 @@
+name: ci-baseline
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "8"
+          cache: maven
+
+      - name: Run baseline verify
+        id: baseline_run
+        shell: bash
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          START=$(date +%s)
+          mvn clean verify -Dgpg.skip=true 2>&1 | tee build.log
+          STATUS=${PIPESTATUS[0]}
+          END=$(date +%s)
+          DURATION=$((END-START))
+          echo "status=${STATUS}" >> "${GITHUB_OUTPUT}"
+          echo "duration_seconds=${DURATION}" >> "${GITHUB_OUTPUT}"
+
+      - name: Collect baseline metrics
+        if: always()
+        shell: bash
+        run: |
+          .github/scripts/collect-baseline-metrics.sh \
+            build.log \
+            baseline-metrics \
+            "${{ steps.baseline_run.outputs.status }}" \
+            "${{ steps.baseline_run.outputs.duration_seconds }}"
+
+      - name: Publish baseline summary
+        if: always()
+        shell: bash
+        run: |
+          cat baseline-metrics/baseline-summary.md >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Upload baseline artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: baseline-metrics
+          path: |
+            build.log
+            baseline-metrics/baseline-metrics.json
+            baseline-metrics/baseline-summary.md
+            baseline-metrics/build-clean.log
+
+      - name: Fail on verify error
+        if: steps.baseline_run.outputs.status != '0'
+        shell: bash
+        run: |
+          echo "mvn clean verify failed with status ${{ steps.baseline_run.outputs.status }}"
+          exit 1
