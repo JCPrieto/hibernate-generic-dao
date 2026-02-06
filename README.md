@@ -43,7 +43,7 @@ Para Hibernate (Session) con DAO y Search:
 <dependency>
   <groupId>io.github.jcprieto</groupId>
   <artifactId>dao-hibernate</artifactId>
-  <version>2.0.1</version>
+  <version>2.0.2</version>
 </dependency>
 ```
 
@@ -54,7 +54,7 @@ Para JPA con Search:
 <dependency>
   <groupId>io.github.jcprieto</groupId>
   <artifactId>search-jpa-hibernate</artifactId>
-  <version>2.0.1</version>
+  <version>2.0.2</version>
 </dependency>
 ```
 
@@ -65,7 +65,7 @@ Si solo necesitas la capa de busqueda independiente:
 <dependency>
   <groupId>io.github.jcprieto</groupId>
   <artifactId>search</artifactId>
-  <version>2.0.1</version>
+  <version>2.0.2</version>
 </dependency>
 ```
 
@@ -73,8 +73,8 @@ Si solo necesitas la capa de busqueda independiente:
 
 ```gradle
 dependencies {
-  implementation "io.github.jcprieto:dao-hibernate:2.0.1"
-  // o: implementation "io.github.jcprieto:search-jpa-hibernate:2.0.1"
+  implementation "io.github.jcprieto:dao-hibernate:2.0.2"
+  // o: implementation "io.github.jcprieto:search-jpa-hibernate:2.0.2"
 }
 ```
 
@@ -89,6 +89,14 @@ mvn clean install
 Luego declara las dependencias anteriores usando la misma version.
 
 ## Changelog
+
+### 2.0.2
+
+- Se agrega workflow de CI `ci-baseline` para ejecutar `mvn clean verify -Dgpg.skip=true` y recoger metricas de
+  compilacion.
+- Se anade script `.github/scripts/collect-baseline-metrics.sh` para publicar resumen y JSON de duracion, warnings,
+  errores y tests.
+- Se actualiza `maven-compiler-plugin` a `3.15.0`.
 
 ### 2.0.1
 

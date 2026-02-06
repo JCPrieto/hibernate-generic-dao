@@ -5,12 +5,12 @@
 - Multi-module Maven build. Parent `pom.xml` aggregates five modules: `search`, `search-hibernate`,
   `search-jpa-hibernate`, `dao`, `dao-hibernate`.
 - Each module follows standard layout: `src/main/java` for sources and `src/main/resources` for resources.
-- Test directories exist (`src/test/java`, `src/test/resources`) but unit tests were removed; add new tests in the
-  module you change.
+- Existing unit tests are concentrated in `search` and `search-hibernate`; add new tests in the module you change.
 
 ## Build, Test, and Development Commands
 
 - `mvn clean verify` — build all modules and run any tests configured.
+- `mvn clean verify -Dgpg.skip=true` — CI baseline build (avoids signing during quality checks).
 - `mvn -pl dao -am package` — build a single module and its dependencies.
 - `mvn -DskipTests package` — build without running tests.
 - `mvn -pl search-hibernate -am test` — run tests for a specific module (if present).
@@ -25,7 +25,8 @@
 
 ## Testing Guidelines
 
-- No active test suite is included in the repository currently; add JUnit tests if you introduce new behavior.
+- Active test suite exists for `search` and `search-hibernate`; no tests currently in `dao`, `dao-hibernate` and
+  `search-jpa-hibernate`.
 - Place tests alongside their module under `src/test/java` and mirror package structure.
 - Name tests clearly (e.g., `GenericDaoTest`, `SearchCriteriaTest`).
 
