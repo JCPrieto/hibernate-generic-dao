@@ -25,6 +25,10 @@
 		<tag>HEAD</tag>
 	</scm>
 
+	<properties>
+		<sonar.organization>jcprieto</sonar.organization>
+	</properties>
+
 	<modules>
 		<module>search</module>
 		<module>search-hibernate</module>
