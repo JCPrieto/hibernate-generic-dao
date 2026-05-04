@@ -48,5 +48,5 @@
   Java 8.
 - Dependency updates often happen per-module (e.g., `search-hibernate`, `search-jpa-hibernate`); keep versions aligned
   when applicable.
-- The release workflow runs SonarQube before publishing. Build the project with Java 8 and `-Dgpg.skip=true` first, then
-  run the Sonar scanner with Java 17 without invoking `verify` again.
+- The release workflow runs SonarQube before publishing. Build and install the project locally with Java 8 and
+  `-Dgpg.skip=true` first, then run the Sonar scanner with Java 17 without invoking `verify` again.
