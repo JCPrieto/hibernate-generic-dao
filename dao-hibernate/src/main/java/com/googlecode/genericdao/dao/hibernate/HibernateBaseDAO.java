@@ -14,28 +14,27 @@
  */
 package com.googlecode.genericdao.dao.hibernate;
 
-import java.io.Serializable;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.hibernate.Criteria;
-import org.hibernate.NonUniqueResultException;
-import org.hibernate.query.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
-
 import com.googlecode.genericdao.search.ExampleOptions;
 import com.googlecode.genericdao.search.Filter;
 import com.googlecode.genericdao.search.ISearch;
 import com.googlecode.genericdao.search.SearchResult;
 import com.googlecode.genericdao.search.hibernate.HibernateMetadataUtil;
 import com.googlecode.genericdao.search.hibernate.HibernateSearchProcessor;
+import org.hibernate.Criteria;
+import org.hibernate.NonUniqueResultException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 
 import javax.activation.UnsupportedDataTypeException;
+import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Base class for DAOs that uses Hibernate SessionFactory and HQL for searches.
@@ -532,12 +531,10 @@ public class HibernateBaseDAO {
 	 * Returns the number of instances of this class in the datastore.
 	 */
 	protected int _count(Class<?> type) {
-		List counts = getSession().createQuery("select count(_it_) from " + getMetadataUtil().get(type).getEntityName() + " _it_").list();
-		int sum = 0;
-		for (Object count : counts) {
-			sum += ((Long) count).intValue();
-		}
-		return sum;
+		Criteria criteria = getSession().createCriteria(type);
+		criteria.setProjection(Projections.rowCount());
+		Number count = (Number) criteria.uniqueResult();
+		return count.intValue();
 	}
 
 	/**
