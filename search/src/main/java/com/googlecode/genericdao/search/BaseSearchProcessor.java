@@ -723,7 +723,7 @@ public abstract class BaseSearchProcessor {
 	 * For example:
 	 *
 	 * <pre>
-	 * Filter.some(&quot;some_collection_of_strings&quot;, Filter.equal(&quot;&quot;, &quot;Bob&quot;)
+	 * Filter.some(&quot;some_collection_of_strings&quot;, Filter.eq(&quot;&quot;, &quot;Bob&quot;)
 	 * Filter.all(&quot;some_collection_of_numbers&quot;, Filter.greaterThan(null, 23)
 	 * </pre>
 	 *
@@ -1177,7 +1177,7 @@ public abstract class BaseSearchProcessor {
 		if (metadata.isEntity() && !metadata.getIdType().isEmbeddable()) {
 			Object id = metadata.getIdValue(example);
 			if (id != null) {
-				filters.add(Filter.equal(listToPath(path, "id"), id));
+				filters.add(Filter.eq(listToPath(path, "id"), id));
 				return;
 			}
 		}
@@ -1218,7 +1218,7 @@ public abstract class BaseSearchProcessor {
 							filters.add(new Filter(listToPath(path, property), val,
 									options.isIgnoreCase() ? Filter.OP_ILIKE : Filter.OP_LIKE));
 						} else {
-							filters.add(Filter.equal(listToPath(path, property), value));
+							filters.add(Filter.eq(listToPath(path, property), value));
 						}
 					}
 				}

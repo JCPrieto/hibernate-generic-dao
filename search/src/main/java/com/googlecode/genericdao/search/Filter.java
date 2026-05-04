@@ -28,7 +28,7 @@ import java.util.List;
  * <p>
  * A <code>Filter</code> is used by the <code>Search</code> class to specify a
  * restriction on what results should be returned in the search. For example, if
- * a filter <code>Filter.equal("name","Paul")</code> were added to the search,
+ * a filter <code>Filter.eq("name","Paul")</code> were added to the search,
  * only objects with the property "name" equal to the string "Paul" would be
  * returned.
  * <p>
@@ -108,12 +108,23 @@ public class Filter implements Serializable {
     /**
      * Create a new Filter using the == operator.
      */
-    public static Filter equal(String property, Object value) throws UnsupportedDataTypeException {
+    public static Filter eq(String property, Object value) throws UnsupportedDataTypeException {
         if (value instanceof LocalDateTime) {
             throw new UnsupportedDataTypeException();
         }
 
         return new Filter(property, value, OP_EQUAL);
+    }
+
+    /**
+     * Create a new Filter using the == operator.
+     *
+     * @deprecated Use {@link #eq(String, Object)}.
+     */
+    @Deprecated
+    @SuppressWarnings({"java:S1201", "squid:S1201"})
+    public static Filter equal(String property, Object value) throws UnsupportedDataTypeException {
+        return eq(property, value);
     }
 
     /**
@@ -260,7 +271,7 @@ public class Filter implements Serializable {
     /**
      * Create a new Filter using the == operator.
      */
-    public static Filter equal(String property, Object value, ZoneId zoneId) {
+    public static Filter eq(String property, Object value, ZoneId zoneId) {
         if (value instanceof LocalDateTime) {
             value = ((LocalDateTime) value).atZone(zoneId)
                     .withZoneSameInstant(ZoneId.of("UTC"))
@@ -268,6 +279,17 @@ public class Filter implements Serializable {
         }
 
         return new Filter(property, value, OP_EQUAL);
+    }
+
+    /**
+     * Create a new Filter using the == operator.
+     *
+     * @deprecated Use {@link #eq(String, Object, ZoneId)}.
+     */
+    @Deprecated
+    @SuppressWarnings({"java:S1201", "squid:S1201"})
+    public static Filter equal(String property, Object value, ZoneId zoneId) {
+        return eq(property, value, zoneId);
     }
 
     /**

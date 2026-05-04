@@ -154,14 +154,14 @@ public class SearchUtil {
      * Add a filter that uses the == operator.
      */
     public static void addFilterEqual(IMutableSearch search, String property, Object value) throws UnsupportedDataTypeException {
-        addFilter(search, Filter.equal(property, value));
+        addFilter(search, Filter.eq(property, value));
     }
 
     /**
      * Add a filter that uses the == operator.
      */
     public static void addFilterEqual(IMutableSearch search, String property, Object value, ZoneId zoneId) {
-        addFilter(search, Filter.equal(property, value, zoneId));
+        addFilter(search, Filter.eq(property, value, zoneId));
     }
 
     /**
