@@ -43,5 +43,10 @@
 
 - This project modernizes Hibernate Generic DAO for Hibernate 5; avoid introducing dependencies incompatible with
   Hibernate 5 or Java 8.
+- Java 8 remains the supported runtime/API baseline. Workflows may use newer JDKs for tooling such as SonarQube, but do
+  not add or widen runtime dependencies only to satisfy local builds on newer JDKs when the dependency is provided by
+  Java 8.
 - Dependency updates often happen per-module (e.g., `search-hibernate`, `search-jpa-hibernate`); keep versions aligned
   when applicable.
+- The release workflow runs SonarQube before publishing; keep Sonar analysis commands using `-Dgpg.skip=true` so quality
+  checks do not require signing credentials.
