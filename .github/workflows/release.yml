@@ -6,7 +6,7 @@ on:
       - master
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   sonarqube:
@@ -56,6 +56,8 @@ jobs:
     needs: sonarqube
     runs-on: ubuntu-latest
     environment: release
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
