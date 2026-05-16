@@ -634,9 +634,7 @@ public class HibernateBaseDAO {
 			return false;
 		type = metadataUtil.getUnproxiedClass(type); //Get the real entity class
 
-		Query query = getSession().createQuery("select id from " + getMetadataUtil().get(type).getEntityName() + " where id = :id");
-		query.setParameter("id", id);
-		return query.list().size() == 1;
+		return getSession().byId(type).loadOptional(id).isPresent();
 	}
 
 	protected boolean[] _exists(Class<?> type, Serializable... ids) {
