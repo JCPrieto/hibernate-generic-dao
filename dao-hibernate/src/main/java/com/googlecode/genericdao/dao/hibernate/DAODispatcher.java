@@ -117,6 +117,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 	 * @deprecated use flush({@code Class<?>})
 	 */
 	@Deprecated
+	@Override
 	public void flush() {
 		throw new DAODispatcherException(
 				"The flush() method cannot be used with DAODispatcher because it could does not include a Class type to dispatch to. Use flush(Class<?>).");
