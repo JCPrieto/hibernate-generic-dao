@@ -1,4 +1,7 @@
 # hibernate-generic-dao
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=JCPrieto_hibernate-generic-dao&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=JCPrieto_hibernate-generic-dao)
+
 Fork de Hibernate Generic D.A.O. Framework https://code.google.com/archive/p/hibernate-generic-dao
 
 El motivo de realizar este proyecto es actualizarlo para que sea compatible con Hibernate 5, que el desarrollador original ha dejado de mantenerlo.
