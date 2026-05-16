@@ -117,17 +117,6 @@ public class Filter implements Serializable {
     }
 
     /**
-     * Create a new Filter using the == operator.
-     *
-     * @deprecated Use {@link #eq(String, Object)}.
-     */
-    @Deprecated
-    @SuppressWarnings({"java:S1201", "squid:S1201"})
-    public static Filter equal(String property, Object value) throws UnsupportedDataTypeException {
-        return eq(property, value);
-    }
-
-    /**
      * Create a new Filter using the {@code <} operator.
      */
     public static Filter lessThan(String property, Object value) throws UnsupportedDataTypeException {
