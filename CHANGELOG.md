@@ -1,5 +1,22 @@
 # Changelog
 
+## 3.0.0
+
+- Breaking change en `search`: se elimina definitivamente `Filter.equal(...)`; usar `Filter.eq(...)` como API de
+  igualdad.
+- Se actualiza `org.slf4j:slf4j-api` de `2.0.17` a `2.0.18` en `search`.
+- Se agrega cobertura unitaria para `BaseDAODispatcher` en `dao` y dependencia de test `JUnit 4.13.2`.
+- Se reemplaza en `dao-hibernate` la consulta HQL dinamica de existencia por `Session.byId(...).loadOptional(...)`,
+  evitando construccion dinamica de query y manteniendo compatibilidad Hibernate 5.
+- Se anade `@Override` en `DAODispatcher.flush()` para aclarar la implementacion de `GeneralDAO`.
+- Se configura JaCoCo XML para que SonarQube importe cobertura desde los reportes generados durante `verify`.
+- Se restringen permisos globales del workflow de release a `contents: read` y se mueve `contents: write` al job que
+  crea la release.
+- Se anade insignia de Quality Gate de SonarQube al `README`.
+- Se documenta el tablero de deuda tecnica en `docs/TECHNICAL_DEBT_BOARD.md` y se referencia desde `AGENTS.md`.
+- Se suben todos los modulos a `3.0.0` porque el cambio de API en `search` impacta al grafo completo de dependencias
+  internas mediante `${project.version}`.
+
 ## 2.1.0
 
 - Se anade `Filter.eq(...)` como metodo recomendado para crear filtros de igualdad y se depreca `Filter.equal(...)`

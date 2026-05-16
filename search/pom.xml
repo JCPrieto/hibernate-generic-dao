@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>search</artifactId>
 	<packaging>jar</packaging>
-	<version>2.1.0</version>
+	<version>3.0.0</version>
 	<name>Hibernate Generic DAO - Search</name>
 	<parent>
 		<artifactId>genericdao-parent</artifactId>
 		<groupId>io.github.jcprieto</groupId>
-		<version>2.1.0</version>
+		<version>3.0.0</version>
 	</parent>
 
 	<dependencies>

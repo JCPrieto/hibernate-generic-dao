@@ -5,7 +5,8 @@
 - Multi-module Maven build. Parent `pom.xml` aggregates five modules: `search`, `search-hibernate`,
   `search-jpa-hibernate`, `dao`, `dao-hibernate`.
 - Each module follows standard layout: `src/main/java` for sources and `src/main/resources` for resources.
-- Existing unit tests are concentrated in `search` and `search-hibernate`; add new tests in the module you change.
+- Existing unit tests are concentrated in `search`, `search-hibernate`, and `dao`; add new tests in the module you
+  change.
 - Technical debt ownership and backlog are tracked in `docs/TECHNICAL_DEBT_BOARD.md`.
 
 ## Build, Test, and Development Commands
@@ -26,7 +27,7 @@
 
 ## Testing Guidelines
 
-- Active test suite exists for `search` and `search-hibernate`; no tests currently in `dao`, `dao-hibernate` and
+- Active test suite exists for `search`, `search-hibernate`, and `dao`; no tests currently in `dao-hibernate` and
   `search-jpa-hibernate`.
 - Place tests alongside their module under `src/test/java` and mirror package structure.
 - Name tests clearly (e.g., `GenericDaoTest`, `SearchCriteriaTest`).
