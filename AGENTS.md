@@ -6,6 +6,7 @@
   `search-jpa-hibernate`, `dao`, `dao-hibernate`.
 - Each module follows standard layout: `src/main/java` for sources and `src/main/resources` for resources.
 - Existing unit tests are concentrated in `search` and `search-hibernate`; add new tests in the module you change.
+- Technical debt ownership and backlog are tracked in `docs/TECHNICAL_DEBT_BOARD.md`.
 
 ## Build, Test, and Development Commands
 
@@ -37,6 +38,7 @@
 - For PRs, include:
     - A brief summary of changes and affected modules.
     - Linked issues or rationale for dependency updates.
+  - The technical debt ID from `docs/TECHNICAL_DEBT_BOARD.md` when applicable.
     - Notes on compatibility impacts (Hibernate 5, Java 8) and any new tests added.
 
 ## Configuration & Compatibility Notes
