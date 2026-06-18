@@ -23,6 +23,7 @@ import com.googlecode.genericdao.search.SearchResult;
 
 import javax.activation.UnsupportedDataTypeException;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.List;
 
 /**
@@ -193,7 +194,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 		Object specificDAO = getSpecificDAO(type.getName());
 		if (specificDAO != null) {
 			if (specificDAO instanceof GenericDAO) {
-				((GenericDAO) specificDAO).refresh(entities);
+				((GenericDAO) specificDAO).refresh(toTypedArray(type, entities));
 			} else {
 				callMethod(specificDAO, "refresh", entities);
 			}
@@ -230,7 +231,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 		Object specificDAO = getSpecificDAO(type.getName());
 		if (specificDAO != null) {
 			if (specificDAO instanceof GenericDAO) {
-				((GenericDAO) specificDAO).remove(entities);
+				((GenericDAO) specificDAO).remove(toTypedArray(type, entities));
 			} else {
 				callMethod(specificDAO, "remove", entities);
 			}
@@ -296,7 +297,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 		Object specificDAO = getSpecificDAO(type.getName());
 		if (specificDAO != null) {
 			if (specificDAO instanceof GenericDAO) {
-				return ((GenericDAO) specificDAO).save(entities);
+				return ((GenericDAO) specificDAO).save(toTypedArray(type, entities));
 			} else {
 				return (Object[]) callMethod(specificDAO, "save", entities);
 			}
@@ -401,7 +402,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 		Object specificDAO = getSpecificDAO(type.getName());
 		if (specificDAO != null) {
 			if (specificDAO instanceof GenericDAO) {
-				return ((GenericDAO) specificDAO).merge(entities);
+				return ((GenericDAO) specificDAO).merge(toTypedArray(type, entities));
 			} else {
 				return (Object[]) callMethod(specificDAO, "merge", entities);
 			}
@@ -425,13 +426,19 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 		Object specificDAO = getSpecificDAO(type.getName());
 		if (specificDAO != null) {
 			if (specificDAO instanceof GenericDAO) {
-				((GenericDAO) specificDAO).persist(entities);
+				((GenericDAO) specificDAO).persist(toTypedArray(type, entities));
 			} else {
 				callMethod(specificDAO, "persist", entities);
 			}
 		} else {
 			generalDAO.persist(entities);
 		}
+	}
+
+	private Object[] toTypedArray(Class<?> type, Object[] entities) {
+		Object[] typedArray = (Object[]) Array.newInstance(type, entities.length);
+		System.arraycopy(entities, 0, typedArray, 0, entities.length);
+		return typedArray;
 	}
 
 }
