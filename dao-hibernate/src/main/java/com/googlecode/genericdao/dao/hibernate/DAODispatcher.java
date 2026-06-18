@@ -275,7 +275,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 
 	public boolean[] save(Object... entities) {
 		if (entities == null)
-			return null;
+			return new boolean[]{};
 		Class<?> type = getUniformArrayType(entities);
 		if (type == null)
 			return new boolean[entities.length];
