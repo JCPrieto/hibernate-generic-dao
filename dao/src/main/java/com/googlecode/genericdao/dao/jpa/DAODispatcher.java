@@ -97,7 +97,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 		Object specificDAO = getSpecificDAO(type.getName());
 		if (specificDAO != null) {
 			if (specificDAO instanceof GenericDAO) {
-				return (T[]) ((GenericDAO) specificDAO).find(ids);
+				return (T[]) ((GenericDAO) specificDAO).find(toTypedArray(ids));
 			} else {
 				return (T[]) callMethod(specificDAO, "find", (Object[]) ids);
 			}
@@ -157,7 +157,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 		Object specificDAO = getSpecificDAO(type.getName());
 		if (specificDAO != null) {
 			if (specificDAO instanceof GenericDAO) {
-				return (T[]) ((GenericDAO) specificDAO).getReferences(ids);
+				return (T[]) ((GenericDAO) specificDAO).getReferences(toTypedArray(ids));
 			} else {
 				return (T[]) callMethod(specificDAO, "getReferences", (Object[]) ids);
 			}
@@ -257,7 +257,7 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 		Object specificDAO = getSpecificDAO(type.getName());
 		if (specificDAO != null) {
 			if (specificDAO instanceof GenericDAO) {
-				((GenericDAO) specificDAO).removeByIds(ids);
+				((GenericDAO) specificDAO).removeByIds(toTypedArray(ids));
 			} else {
 				callMethod(specificDAO, "removeByIds", (Object[]) ids);
 			}
@@ -438,6 +438,17 @@ public class DAODispatcher extends BaseDAODispatcher implements GeneralDAO {
 	private Object[] toTypedArray(Class<?> type, Object[] entities) {
 		Object[] typedArray = (Object[]) Array.newInstance(type, entities.length);
 		System.arraycopy(entities, 0, typedArray, 0, entities.length);
+		return typedArray;
+	}
+
+	private Serializable[] toTypedArray(Serializable[] ids) {
+		Class<?> type = getUniformArrayType(ids);
+		if (type == null || type.equals(Object.class)) {
+			return ids;
+		}
+
+		Serializable[] typedArray = (Serializable[]) Array.newInstance(type, ids.length);
+		System.arraycopy(ids, 0, typedArray, 0, ids.length);
 		return typedArray;
 	}
 

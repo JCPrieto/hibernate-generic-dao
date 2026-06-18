@@ -1,5 +1,21 @@
 # Changelog
 
+## 3.0.1
+
+- Se corrige `dao` para que `DAODispatcher` convierta los arrays de entidades e IDs al tipo real antes de delegar en
+  `GenericDAO`, evitando `ClassCastException` y errores de seleccion de overload en operaciones varargs.
+- Se amplia la cobertura unitaria de `DAODispatcher` en `dao`, incluyendo delegacion a DAOs especificos tipados,
+  delegacion por reflexion, fallback al DAO general y caminos de arrays nulos, vacios, uniformes y mixtos.
+- Se cambia `dao-hibernate` para que `DAODispatcher.save((Object[]) null)` devuelva un array booleano vacio en vez de
+  `null`, alineandolo con el comportamiento defensivo de no-op.
+- Se actualiza `jacoco-maven-plugin` de `0.8.14` a `0.8.15`.
+- Se actualiza `central-publishing-maven-plugin` de `0.10.0` a `0.11.0` y se reemplaza `tokenAuth` por `autoPublish`.
+- Se mueve la firma GPG y la publicacion en Maven Central al perfil `release`, dejando el build local/CI normal sin
+  firma.
+- Se fija `softprops/action-gh-release` a un SHA completo para evitar dependencias de GitHub Actions basadas en tags
+  mutables.
+- Se suben todos los modulos a `3.0.1` para mantener alineado el grafo interno basado en `${project.version}`.
+
 ## 3.0.0
 
 - Breaking change en `search`: se elimina definitivamente `Filter.equal(...)`; usar `Filter.eq(...)` como API de
@@ -12,8 +28,6 @@
 - Se configura JaCoCo XML para que SonarQube importe cobertura desde los reportes generados durante `verify`.
 - Se restringen permisos globales del workflow de release a `contents: read` y se mueve `contents: write` al job que
   crea la release.
-- Se mueve la firma GPG y la publicacion en Maven Central al perfil `release`, dejando el build local/CI normal sin
-  firma.
 - Se anade insignia de Quality Gate de SonarQube al `README`.
 - Se documenta el tablero de deuda tecnica en `docs/TECHNICAL_DEBT_BOARD.md` y se referencia desde `AGENTS.md`.
 - Se suben todos los modulos a `3.0.0` porque el cambio de API en `search` impacta al grafo completo de dependencias

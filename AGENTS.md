@@ -49,6 +49,8 @@
 - Java 8 remains the supported runtime/API baseline. Workflows may use newer JDKs for tooling such as SonarQube, but do
   not add or widen runtime dependencies only to satisfy local builds on newer JDKs when the dependency is provided by
   Java 8.
+- Keep the parent and module versions aligned unless the internal dependency graph is changed away from
+  `${project.version}`.
 - Dependency updates often happen per-module (e.g., `search-hibernate`, `search-jpa-hibernate`); keep versions aligned
   when applicable.
 - The release workflow runs SonarQube before publishing. Build and install the project locally with Java 8 first, then
