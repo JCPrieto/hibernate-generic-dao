@@ -11,8 +11,8 @@
 
 ## Build, Test, and Development Commands
 
-- `mvn clean verify` — build all modules and run any tests configured.
-- `mvn clean verify -Dgpg.skip=true` — CI baseline build (avoids signing during quality checks).
+- `mvn clean verify` — normal local/CI quality build; GPG signing and Central publishing are only active with
+  `-Prelease`.
 - `mvn -pl dao -am package` — build a single module and its dependencies.
 - `mvn -DskipTests package` — build without running tests.
 - `mvn -pl search-hibernate -am test` — run tests for a specific module (if present).
@@ -51,5 +51,6 @@
   Java 8.
 - Dependency updates often happen per-module (e.g., `search-hibernate`, `search-jpa-hibernate`); keep versions aligned
   when applicable.
-- The release workflow runs SonarQube before publishing. Build and install the project locally with Java 8 and
-  `-Dgpg.skip=true` first, then run the Sonar scanner with Java 17 without invoking `verify` again.
+- The release workflow runs SonarQube before publishing. Build and install the project locally with Java 8 first, then
+  run the Sonar scanner with Java 17 without invoking `verify` again. Use `mvn clean verify -Prelease` only for
+  publication because that profile enables GPG signing and Central publishing.

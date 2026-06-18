@@ -12,6 +12,8 @@
 - Se configura JaCoCo XML para que SonarQube importe cobertura desde los reportes generados durante `verify`.
 - Se restringen permisos globales del workflow de release a `contents: read` y se mueve `contents: write` al job que
   crea la release.
+- Se mueve la firma GPG y la publicacion en Maven Central al perfil `release`, dejando el build local/CI normal sin
+  firma.
 - Se anade insignia de Quality Gate de SonarQube al `README`.
 - Se documenta el tablero de deuda tecnica en `docs/TECHNICAL_DEBT_BOARD.md` y se referencia desde `AGENTS.md`.
 - Se suben todos los modulos a `3.0.0` porque el cambio de API en `search` impacta al grafo completo de dependencias

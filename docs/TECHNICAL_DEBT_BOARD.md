@@ -50,6 +50,7 @@ y asegurar que cada cambio relevante deje pruebas o una justificacion explicita.
 | ID          | Modulo | Owner             | Prioridad | Estado | Punto de mejora                                                 |
 |-------------|--------|-------------------|-----------|--------|-----------------------------------------------------------------|
 | TD-DONE-001 | Todos  | owner-maintenance | P1        | Hecho  | Crear workflow `ci-baseline` y recolector de metricas de build. |
+| TD-DONE-002 | Todos  | owner-maintenance | P1        | Hecho  | Separar firma GPG y publicacion Central en perfil `release`.    |
 
 ## Reglas de mantenimiento
 
