@@ -49,6 +49,8 @@
 - Java 8 remains the supported runtime/API baseline. Workflows may use newer JDKs for tooling such as SonarQube, but do
   not add or widen runtime dependencies only to satisfy local builds on newer JDKs when the dependency is provided by
   Java 8.
+- Build and test source changes with a Java 8 runtime when possible. In particular, `search` still uses
+  `javax.activation.UnsupportedDataTypeException`, which is provided by Java 8 but is not part of newer JDKs.
 - Keep the parent and module versions aligned unless the internal dependency graph is changed away from
   `${project.version}`.
 - Dependency updates often happen per-module (e.g., `search-hibernate`, `search-jpa-hibernate`); keep versions aligned

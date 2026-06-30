@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.0.2
+
+- Se limpia `FlexSearch` en `search`, eliminando comprobaciones redundantes sobre arrays tipados, modernizando bucles
+  internos y manteniendo el filtrado defensivo de valores nulos o vacios.
+- Se amplia la cobertura unitaria de `FlexSearch` en `search`, incluyendo filtros, ordenaciones, campos, fetches y
+  propiedades escalares.
+- Se ajustan los adaptadores Flex de `dao-hibernate`, eliminando declaraciones de excepciones innecesarias en metodos
+  de busqueda, suprimiendo trazas directas a consola y acotando tipos genericos en resultados de listas y conteos.
+- Se actualiza `org.javassist:javassist` de `3.31.0-GA` a `3.32.0-GA` en `search-hibernate`.
+- Se ignora el directorio local `.codex/` para evitar publicar configuracion de entorno.
+- Se suben todos los modulos a `3.0.2` para mantener alineado el grafo interno basado en `${project.version}`; el
+  impacto es de mantenimiento y correccion, sin cambios funcionales incompatibles previstos.
+
 ## 3.0.1
 
 - Se corrige `dao` para que `DAODispatcher` convierta los arrays de entidades e IDs al tipo real antes de delegar en
