@@ -106,3 +106,4 @@ search-jpa-hibernate/src/main/main4.iml
 search/src/main/main6.iml
 /.github/scripts/baseline-metrics/baseline-metrics.json
 /.github/scripts/baseline-metrics/baseline-summary.md
+.codex/*
