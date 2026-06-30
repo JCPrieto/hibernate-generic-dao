@@ -14,12 +14,12 @@
  */
 package com.googlecode.genericdao.dao.hibernate;
 
-import java.io.Serializable;
-import java.util.List;
-
 import com.googlecode.genericdao.search.SearchResult;
 import com.googlecode.genericdao.search.flex.FlexSearch;
 import com.googlecode.genericdao.search.flex.FlexSearchWrapper;
+
+import java.io.Serializable;
+import java.util.List;
 
 public class FlexDAOAdapter {
 	
@@ -72,20 +72,20 @@ public class FlexDAOAdapter {
 		Class<?> type = Class.forName(className);
 		dao.removeByIds(type, ids);
 	}
-	
-	public List<?> search(FlexSearch flexSearch) throws ClassNotFoundException {
+
+	public List<?> search(FlexSearch flexSearch) {
 		return dao.search(new FlexSearchWrapper(flexSearch));
 	}
-	
-	public int count(FlexSearch flexSearch) throws ClassNotFoundException {
+
+	public int count(FlexSearch flexSearch) {
 		return dao.count(new FlexSearchWrapper(flexSearch));
 	}
-	
-	public SearchResult<?> searchAndCount(FlexSearch flexSearch) throws ClassNotFoundException {
+
+	public SearchResult<?> searchAndCount(FlexSearch flexSearch) {
 		return dao.searchAndCount(new FlexSearchWrapper(flexSearch));
 	}
-	
-	public Object searchUnique(FlexSearch flexSearch) throws ClassNotFoundException {
+
+	public Object searchUnique(FlexSearch flexSearch) {
 		return dao.searchUnique(new FlexSearchWrapper(flexSearch));
 	}
 }
