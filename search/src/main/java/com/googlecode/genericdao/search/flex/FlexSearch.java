@@ -14,14 +14,14 @@
  */
 package com.googlecode.genericdao.search.flex;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.googlecode.genericdao.search.Field;
 import com.googlecode.genericdao.search.Filter;
 import com.googlecode.genericdao.search.ISearch;
 import com.googlecode.genericdao.search.Sort;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a search DTO that is suitable for both Flex and Java. Is can be used
@@ -42,21 +42,21 @@ public class FlexSearch implements Serializable {
 
 	protected String searchClassName;
 
-	protected List<Filter> filters = new ArrayList<Filter>();
+	protected List<Filter> filters = new ArrayList<>();
 
 	protected boolean disjunction;
 
-	protected List<Sort> sorts = new ArrayList<Sort>();
+	protected List<Sort> sorts = new ArrayList<>();
 
-	protected List<Field> fields = new ArrayList<Field>();
+	protected List<Field> fields = new ArrayList<>();
 	
 	protected boolean distinct;
 
-	protected List<String> fetches = new ArrayList<String>();
+	protected List<String> fetches = new ArrayList<>();
 
 	protected int resultMode = ISearch.RESULT_AUTO;
 
-	public void setSearchClassName(String searchClassName) throws ClassNotFoundException {
+	public void setSearchClassName(String searchClassName) {
 		this.searchClassName = searchClassName;
 	}
 
@@ -71,10 +71,9 @@ public class FlexSearch implements Serializable {
 	public void setFilters(Filter[] filters) {
 		this.filters.clear();
 		if (filters != null) {
-			for (int i = 0; i < filters.length; i++) {
-				Object o = filters[i];
-				if (o != null && o instanceof Filter) {
-					this.filters.add(filters[i]);
+			for (Filter filter : filters) {
+				if (filter != null) {
+					this.filters.add(filter);
 				}
 			}
 		}
@@ -87,10 +86,9 @@ public class FlexSearch implements Serializable {
 	public void setSorts(Sort[] sorts) {
 		this.sorts.clear();
 		if (sorts != null) {
-			for (int i = 0; i < sorts.length; i++) {
-				Object o = sorts[i];
-				if (o != null && o instanceof Sort) {
-					this.sorts.add(sorts[i]);
+			for (Sort sort : sorts) {
+				if (sort != null) {
+					this.sorts.add(sort);
 				}
 			}
 		}
@@ -103,9 +101,8 @@ public class FlexSearch implements Serializable {
 	public void setFields(Field[] fields) {
 		this.fields.clear();
 		if (fields != null) {
-			for (int i = 0; i < fields.length; i++) {
-				Field f = fields[i];
-				if (f != null && f.getProperty() != null && f.getProperty().length() > 0) {
+			for (Field f : fields) {
+				if (f != null && f.getProperty() != null && !f.getProperty().isEmpty()) {
 					if (f.getKey() == null)
 						f.setKey(f.getProperty());
 					this.fields.add(f);
@@ -121,9 +118,9 @@ public class FlexSearch implements Serializable {
 	public void setFetches(String[] fetches) {
 		this.fetches.clear();
 		if (fetches != null) {
-			for (int i = 0; i < fetches.length; i++) {
-				if (fetches[i] != null && !"".equals(fetches[i]))
-					this.fetches.add(fetches[i]);
+			for (String fetch : fetches) {
+				if (fetch != null && !fetch.isEmpty())
+					this.fetches.add(fetch);
 			}
 		}
 	}
