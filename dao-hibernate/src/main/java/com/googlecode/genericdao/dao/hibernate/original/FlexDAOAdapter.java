@@ -14,21 +14,20 @@
  */
 package com.googlecode.genericdao.dao.hibernate.original;
 
-import java.io.Serializable;
-import java.util.List;
-
 import com.googlecode.genericdao.search.SearchResult;
 import com.googlecode.genericdao.search.flex.FlexSearch;
 import com.googlecode.genericdao.search.flex.FlexSearchWrapper;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * General Remote DAO for Adobe Flex.
  * 
  * @author dwolverton
  */
-@SuppressWarnings("unchecked")
 public class FlexDAOAdapter {
-	private static long mockDelay = 0;
+	private static final long mockDelay = 0;
 	
 	private GeneralDAO dao;
 
@@ -48,25 +47,15 @@ public class FlexDAOAdapter {
 	public Object fetch(Serializable id, String className) throws Exception {
 		if (mockDelay != 0) Thread.sleep(mockDelay);
 		Class<?> klass;
-		try {
-			klass = Class.forName(className);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw e;
-		}
+		klass = Class.forName(className);
 		
 		return dao.fetch(klass, id);
 	}
 
-	public List fetchAll(String className) throws Exception {
+	public List<?> fetchAll(String className) throws Exception {
 		if (mockDelay != 0) Thread.sleep(mockDelay);
 		Class<?> klass;
-		try {
-			klass = Class.forName(className);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw e;
-		}
+		klass = Class.forName(className);
 
 		return dao.fetchAll(klass);
 	}
@@ -92,12 +81,7 @@ public class FlexDAOAdapter {
 	public void deleteById(Serializable id, String className) throws Exception {
 		if (mockDelay != 0) Thread.sleep(mockDelay);
 		Class<?> klass;
-		try {
-			klass = Class.forName(className);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw e;
-		}
+		klass = Class.forName(className);
 
 		dao.deleteById(klass, id);
 	}
@@ -109,21 +93,21 @@ public class FlexDAOAdapter {
 	
 	public void deleteList(Object[] list) throws Exception {
 		if (mockDelay != 0) Thread.sleep(mockDelay);
-		
-		for(int i = 0; i < list.length; i++) {
-			deleteEntity(list[i]);
+
+		for (Object o : list) {
+			deleteEntity(o);
 		}
 	}
 	
 	public void deleteListById(Serializable[] ids, String className) throws Exception {
 		if (mockDelay != 0) Thread.sleep(mockDelay);
-		
-		for(int i = 0; i < ids.length; i++) {
-			deleteById(ids[i], className);
-		}		
+
+		for (Serializable id : ids) {
+			deleteById(id, className);
+		}
 	}
 
-	public List search(FlexSearch flexSearch) throws Exception {
+	public List<?> search(FlexSearch flexSearch) throws Exception {
 		if (mockDelay != 0) Thread.sleep(mockDelay);
 		
 		return dao.search(new FlexSearchWrapper(flexSearch));
@@ -135,7 +119,7 @@ public class FlexDAOAdapter {
 		return dao.count(new FlexSearchWrapper(flexSearch));
 	}
 
-	public SearchResult searchAndLength(FlexSearch flexSearch) throws Exception {
+	public SearchResult<?> searchAndLength(FlexSearch flexSearch) throws Exception {
 		if (mockDelay != 0) Thread.sleep(mockDelay);
 
 		return dao.searchAndCount(new FlexSearchWrapper(flexSearch));
