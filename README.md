@@ -46,7 +46,7 @@ Para Hibernate (Session) con DAO y Search:
 <dependency>
   <groupId>io.github.jcprieto</groupId>
   <artifactId>dao-hibernate</artifactId>
-  <version>2.1.0</version>
+  <version>3.0.3</version>
 </dependency>
 ```
 
@@ -57,7 +57,7 @@ Para JPA con Search:
 <dependency>
   <groupId>io.github.jcprieto</groupId>
   <artifactId>search-jpa-hibernate</artifactId>
-  <version>2.1.0</version>
+  <version>3.0.3</version>
 </dependency>
 ```
 
@@ -68,7 +68,7 @@ Si solo necesitas la capa de busqueda independiente:
 <dependency>
   <groupId>io.github.jcprieto</groupId>
   <artifactId>search</artifactId>
-  <version>2.1.0</version>
+  <version>3.0.3</version>
 </dependency>
 ```
 
@@ -76,8 +76,8 @@ Si solo necesitas la capa de busqueda independiente:
 
 ```gradle
 dependencies {
-  implementation "io.github.jcprieto:dao-hibernate:2.1.0"
-  // o: implementation "io.github.jcprieto:search-jpa-hibernate:2.1.0"
+  implementation "io.github.jcprieto:dao-hibernate:3.0.3"
+  // o: implementation "io.github.jcprieto:search-jpa-hibernate:3.0.3"
 }
 ```
 

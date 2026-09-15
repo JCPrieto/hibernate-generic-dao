@@ -4,7 +4,7 @@
 	<groupId>io.github.jcprieto</groupId>
 	<artifactId>genericdao-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>3.0.2</version>
+	<version>3.0.3</version>
 
 	<name>Hibernate Generic DAO</name>
 	<description>Fork of Hibernate Generic DAO updated for Hibernate 5.</description>
@@ -66,7 +66,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.15.0</version>
+				<version>3.16.0</version>
 				<configuration>
 					<source>8</source>
 					<target>8</target>
