@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>search-hibernate</artifactId>
 	<packaging>jar</packaging>
-    <version>3.0.2</version>
+    <version>3.0.3</version>
 	<name>Hibernate Generic DAO - Search Hibernate</name>
 
 	<parent>
 		<artifactId>genericdao-parent</artifactId>
         <groupId>io.github.jcprieto</groupId>
-        <version>3.0.2</version>
+        <version>3.0.3</version>
 	</parent>
 
 	<dependencies>
@@ -27,7 +27,7 @@
 		<dependency>
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
-			<version>3.32.0-GA</version>
+			<version>3.33.0-GA</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

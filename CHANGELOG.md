@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.0.3
+
+- Se actualiza `org.javassist:javassist` de `3.32.0-GA` a `3.33.0-GA` en `search-hibernate`.
+- Se actualiza `org.slf4j:slf4j-api` de `2.0.18` a `2.0.19` en `search`.
+- Se actualiza `maven-compiler-plugin` de `3.15.0` a `3.16.0`, manteniendo `source` y `target` en Java 8.
+- Se mantienen Hibernate `5.6.15.Final` y la API `javax.persistence`; Hibernate 6 y 7 se excluyen por requerir
+  runtimes posteriores a Java 8 y cambios incompatibles hacia Jakarta.
+- Se suben todos los modulos a `3.0.3` para mantener alineado el grafo interno basado en `${project.version}`.
+- Sin cambios en la API publica ni en el comportamiento funcional esperado.
+
 ## 3.0.2
 
 - Se limpia `FlexSearch` en `search`, eliminando comprobaciones redundantes sobre arrays tipados, modernizando bucles
