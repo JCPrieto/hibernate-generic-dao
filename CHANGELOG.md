@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.0.4
+
+- Se incorpora el PR #36: `org.slf4j:slf4j-api` de `2.0.19` a `2.0.20` en `search`.
+- Se incorpora el PR #39: `central-publishing-maven-plugin` de `0.11.0` a `0.12.0` en el perfil `release`.
+- Se excluyen los PR #16 y #38: Hibernate 6/7 requiere Java posterior a 8 y migrar de `javax.persistence` a Jakarta; se mantiene Hibernate `5.6.15.Final`.
+- Se suben el padre y los cinco modulos a `3.0.4` para mantener alineadas las dependencias internas basadas en `${project.version}`.
+- Se actualizan los ejemplos de consumo. Sin cambios en la API publica ni en el codigo funcional.
+
 ## 3.0.3
 
 - Se actualiza `org.javassist:javassist` de `3.32.0-GA` a `3.33.0-GA` en `search-hibernate`.
