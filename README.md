@@ -93,15 +93,19 @@ Luego declara las dependencias anteriores usando la misma version.
 
 ## Publicacion automatica en Maven Central
 
-Al subir un tag estable `vMAJOR.MINOR.PATCH` (por ejemplo, `v3.0.5`), el workflow
-[release](.github/workflows/release.yml) valida la version, compila e instala con Java 8,
-ejecuta SonarQube con Java 17 y, si todo termina correctamente, firma y publica el reactor
-completo (POM padre y cinco modulos) con Java 8 mediante `mvn -B -ntp clean deploy -Prelease`.
-El perfil existente usa `autoPublish=true` y espera hasta que Central confirme la publicacion.
-Despues crea y publica la release de GitHub sobre ese tag, con notas generadas automaticamente.
-Si falla la publicacion en Central, no se crea la release de GitHub. Tambien se mantiene la
-publicacion en Central al publicar manualmente una release estable (`release.published`).
-Los pushes a `master` mantienen el analisis SonarQube; las prereleases y los borradores no publican.
+Cada push a `master` compara la version del POM padre con la del commit anterior al push.
+Si aumenta a una version estable `MAJOR.MINOR.PATCH` y aun no existe un tag para esa version,
+el workflow [release](.github/workflows/release.yml) valida los seis POM, compila e instala
+con Java 8, ejecuta SonarQube con Java 17 y firma y publica el reactor completo en Maven Central
+con Java 8 mediante `mvn -B -ntp clean deploy -Prelease`.
+
+El perfil usa `autoPublish=true` y espera la confirmacion de Central. Despues se crea el tag
+`vMAJOR.MINOR.PATCH` sobre el commit compilado y se publica la release de GitHub con notas
+automaticas. Si la version no aumenta, solo se ejecuta el analisis habitual.
+Si falla Central, no se crean ni el tag automatico ni la release.
+
+Tambien se mantienen las entradas manuales: subir un tag estable `vMAJOR.MINOR.PATCH` o
+publicar una release estable desde GitHub. Las prereleases y los borradores de GitHub no publican.
 
 ### Configuracion inicial
 
@@ -138,26 +142,26 @@ No subas ese archivo al repositorio y eliminalo despues de configurar el secreto
 1. Actualiza la version del padre y de los cinco modulos, incluidas sus referencias al padre,
    en los seis `pom.xml`, y actualiza el changelog. Cada publicacion necesita una version nueva:
    Maven Central no permite sobrescribir versiones existentes.
-2. Integra los cambios y sube un tag sobre ese commit, con prefijo `v` y tres componentes numericos.
-   El tag debe coincidir con la version de los POM. Por ejemplo, para la version `3.0.5`:
+2. Integra los cambios en `master` y haz push. Por ejemplo, pasar los seis POM de `3.0.4` a
+   `3.0.5` activa la publicacion automatica de `3.0.5`, el tag `v3.0.5` y su release de GitHub.
+   No necesitas crear el tag ni la release manualmente.
+3. Comprueba el workflow `release` en Actions. No necesitas configurar otro token:
+   el job que crea el tag y la release usa `GITHUB_TOKEN` con permiso `contents: write`.
 
-   ```bash
-   git tag -a v3.0.5 -m "Release 3.0.5"
-   git push origin v3.0.5
-   ```
+La comparacion es numerica: `3.0.10` es posterior a `3.0.9`. Una transicion de `3.0.5-SNAPSHOT`
+a `3.0.5` tambien activa la publicacion. Los pushes sin cambio de version, las bajadas de version,
+las versiones con sufijos y las versiones que ya tengan tag (`v3.0.5` o `3.0.5`) no publican
+automaticamente. Un primer push que cree la rama no publica, porque no tiene version anterior.
+Si el push contiene varios commits, se compara la version anterior al push con la version final.
 
-3. Comprueba el workflow `release` en Actions. Valida, analiza, firma y publica en Central;
-   despues publica la release de GitHub. No necesitas crearla desde la interfaz ni configurar
-   otro token: el job de GitHub usa `GITHUB_TOKEN` con permiso `contents: write`.
+Como alternativa, puedes subir un tag estable `v3.0.5` o publicar manualmente una release estable
+sobre un tag `3.0.5` o `v3.0.5`, siempre con los POM correspondientes. No combines los caminos
+manuales con la publicacion automatica para la misma version.
 
-No se admiten tags automaticos con sufijos de prerelease ni versiones `SNAPSHOT`.
-Como alternativa, puedes crear manualmente una release estable sobre un tag con version exacta
-o prefijo `v`: eso activa la publicacion en Central, sin crear otra release.
-No combines ambos caminos para la misma version.
-
-La release automatica usa `GITHUB_TOKEN`, cuyos eventos no generan otra ejecucion de Actions,
-segun
+Los tags y releases automaticos usan `GITHUB_TOKEN`, cuyos eventos no generan otra ejecucion
+de Actions, segun
 la [restriccion de eventos de GitHub Actions](https://docs.github.com/en/actions/how-tos/writing-workflows/choosing-when-your-workflow-runs/triggering-a-workflow#triggering-a-workflow-from-a-workflow).
+Todo el proceso se ejecuta en el mismo workflow para evitar depender de esos eventos.
 La indexacion en el buscador de Central puede tardar mas que la publicacion.
 Si solo falla el job `Create GitHub release` despues de publicar en Central, reejecuta unicamente
 los jobs fallidos para no repetir la publicacion en Central.

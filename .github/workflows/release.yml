@@ -13,8 +13,29 @@ permissions:
   contents: read
 
 jobs:
+  prepare-release:
+    name: Detect and validate release version
+    if: github.event_name == 'push' || !github.event.release.prerelease
+    runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.prepare.outputs.publish }}
+      tag: ${{ steps.prepare.outputs.tag }}
+    steps:
+      - name: Checkout version history and tags
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+
+      - name: Test release detection
+        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
+
+      - name: Detect and validate release version
+        id: prepare
+        run: python3 .github/scripts/prepare-release.py
+
   sonarqube:
     name: SonarQube analysis
+    needs: prepare-release
     if: github.event_name == 'push' || !github.event.release.prerelease
     runs-on: ubuntu-latest
     steps:
@@ -22,36 +43,6 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
-
-      - name: Validate release version
-        if: github.event_name == 'release' || github.ref_type == 'tag'
-        env:
-          RELEASE_TAG: ${{ github.event.release.tag_name || github.ref_name }}
-          AUTOMATIC_RELEASE: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
-        run: |
-          python3 - <<'PYTHON'
-          import os
-          import re
-          import xml.etree.ElementTree as ET
-          from pathlib import Path
-
-          ns = {"m": "http://maven.apache.org/POM/4.0.0"}
-          root = ET.parse("pom.xml").getroot()
-          version = root.findtext("m:version", namespaces=ns)
-          tag = os.environ["RELEASE_TAG"]
-          if os.environ["AUTOMATIC_RELEASE"] == "true" and not re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+", tag):
-              raise SystemExit("Automatic releases require a stable version tag: vMAJOR.MINOR.PATCH")
-          if not version or "SNAPSHOT" in version.upper() or tag not in (version, "v" + version):
-              raise SystemExit("Release tag must match the non-SNAPSHOT POM version (with optional v prefix)")
-          for module in root.findall("m:modules/m:module", ns):
-              pom = Path(module.text) / "pom.xml"
-              child = ET.parse(pom).getroot()
-              parent_version = child.findtext("m:parent/m:version", namespaces=ns)
-              module_version = child.findtext("m:version", default=parent_version, namespaces=ns)
-              if parent_version != version or module_version != version:
-                  raise SystemExit(str(pom) + ": module and parent versions must match " + version)
-          print("Validated release " + tag + " for version " + version)
-          PYTHON
 
       - name: Set up JDK 8
         uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
@@ -88,8 +79,8 @@ jobs:
         run: mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=JCPrieto_hibernate-generic-dao
 
   build-release:
-    needs: sonarqube
-    if: (github.event_name == 'release' && !github.event.release.prerelease) || (github.event_name == 'push' && github.ref_type == 'tag')
+    needs: [ prepare-release, sonarqube ]
+    if: needs.prepare-release.outputs.publish == 'true'
     runs-on: ubuntu-latest
     environment: release
     concurrency:
@@ -135,17 +126,35 @@ jobs:
 
   github-release:
     name: Create GitHub release
-    needs: build-release
-    if: github.event_name == 'push' && github.ref_type == 'tag'
+    needs: [ prepare-release, build-release ]
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
+      - name: Checkout published commit and tags
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+
+      - name: Create tag for the published commit
+        env:
+          RELEASE_TAG: ${{ needs.prepare-release.outputs.tag }}
+          RELEASE_COMMIT: ${{ github.sha }}
+        run: |
+          if git show-ref --verify --quiet "refs/tags/$RELEASE_TAG"; then
+            test "$(git rev-parse "$RELEASE_TAG^{commit}")" = "$RELEASE_COMMIT"
+          else
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              tag -a "$RELEASE_TAG" "$RELEASE_COMMIT" -m "Release $RELEASE_TAG"
+            git push origin "refs/tags/$RELEASE_TAG"
+          fi
+
       - name: Publish GitHub release with generated notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
-          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_TAG: ${{ needs.prepare-release.outputs.tag }}
         run: |
           if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
             echo "Release $RELEASE_TAG already exists"
