@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - "v[0-9]*"
   release:
     types: [ published ]
 
@@ -22,12 +24,14 @@ jobs:
           fetch-depth: 0
 
       - name: Validate release version
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' || github.ref_type == 'tag'
         env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name || github.ref_name }}
+          AUTOMATIC_RELEASE: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
         run: |
           python3 - <<'PYTHON'
           import os
+          import re
           import xml.etree.ElementTree as ET
           from pathlib import Path
 
@@ -35,6 +39,8 @@ jobs:
           root = ET.parse("pom.xml").getroot()
           version = root.findtext("m:version", namespaces=ns)
           tag = os.environ["RELEASE_TAG"]
+          if os.environ["AUTOMATIC_RELEASE"] == "true" and not re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+", tag):
+              raise SystemExit("Automatic releases require a stable version tag: vMAJOR.MINOR.PATCH")
           if not version or "SNAPSHOT" in version.upper() or tag not in (version, "v" + version):
               raise SystemExit("Release tag must match the non-SNAPSHOT POM version (with optional v prefix)")
           for module in root.findall("m:modules/m:module", ns):
@@ -83,7 +89,7 @@ jobs:
 
   build-release:
     needs: sonarqube
-    if: github.event_name == 'release' && !github.event.release.prerelease
+    if: (github.event_name == 'release' && !github.event.release.prerelease) || (github.event_name == 'push' && github.ref_type == 'tag')
     runs-on: ubuntu-latest
     environment: release
     concurrency:
@@ -126,3 +132,23 @@ jobs:
           CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: mvn -B -ntp clean deploy -Prelease
+
+  github-release:
+    name: Create GitHub release
+    needs: build-release
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Publish GitHub release with generated notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
+            echo "Release $RELEASE_TAG already exists"
+          else
+            gh release create "$RELEASE_TAG" --verify-tag --generate-notes --title "$RELEASE_TAG"
+          fi

@@ -47,11 +47,11 @@ y asegurar que cada cambio relevante deje pruebas o una justificacion explicita.
 
 ## Hecho
 
-| ID          | Modulo | Owner             | Prioridad | Estado | Punto de mejora                                                                                                                    |
-|-------------|--------|-------------------|-----------|--------|------------------------------------------------------------------------------------------------------------------------------------|
-| TD-DONE-001 | Todos  | owner-maintenance | P1        | Hecho  | Crear workflow `ci-baseline` y recolector de metricas de build.                                                                    |
-| TD-DONE-002 | Todos  | owner-maintenance | P1        | Hecho  | Separar firma GPG y publicacion Central en perfil `release`.                                                                       |
-| TD-DONE-003 | Todos  | owner-maintenance | P1        | Hecho  | Automatizar publicacion Central al publicar una release estable, con validacion de versiones y credenciales del entorno `release`. |
+| ID          | Modulo | Owner             | Prioridad | Estado | Punto de mejora                                                                                                                             |
+|-------------|--------|-------------------|-----------|--------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| TD-DONE-001 | Todos  | owner-maintenance | P1        | Hecho  | Crear workflow `ci-baseline` y recolector de metricas de build.                                                                             |
+| TD-DONE-002 | Todos  | owner-maintenance | P1        | Hecho  | Separar firma GPG y publicacion Central en perfil `release`.                                                                                |
+| TD-DONE-003 | Todos  | owner-maintenance | P1        | Hecho  | Automatizar publicacion Central y release GitHub al subir un tag estable, con validacion de versiones y credenciales del entorno `release`. |
 
 ## Reglas de mantenimiento
 
