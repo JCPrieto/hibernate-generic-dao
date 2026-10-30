@@ -91,6 +91,63 @@ mvn clean install
 
 Luego declara las dependencias anteriores usando la misma version.
 
+## Publicacion automatica en Maven Central
+
+Al publicar una release estable en GitHub (`release.published`), el workflow
+[release](.github/workflows/release.yml) valida la version, compila e instala con Java 8,
+ejecuta SonarQube con Java 17 y, si todo termina correctamente, firma y publica el reactor
+completo (POM padre y cinco modulos) con Java 8 mediante `mvn -B -ntp clean deploy -Prelease`.
+El perfil existente usa `autoPublish=true` y espera hasta que Central confirme la publicacion.
+Los pushes a `master` mantienen el analisis SonarQube; las prereleases y los borradores no publican.
+
+### Configuracion inicial
+
+En GitHub, configura estos secretos en el entorno **release**
+(`Settings > Environments > release`) o como secretos del repositorio:
+
+| Secreto            | Contenido                                                                |
+|--------------------|--------------------------------------------------------------------------|
+| `CENTRAL_USERNAME` | Usuario del token generado en Central Portal.                            |
+| `CENTRAL_PASSWORD` | Password del mismo token de Central Portal.                              |
+| `GPG_PRIVATE_KEY`  | Clave privada ASCII armored, incluyendo las cabeceras y saltos de linea. |
+| `GPG_PASSPHRASE`   | Frase de paso de la clave privada.                                       |
+
+El job de SonarQube utiliza `SONAR_TOKEN` como secreto del **repositorio**, ya que se ejecuta
+fuera del entorno `release`. Si el entorno tiene revisores obligatorios, la publicacion
+esperara su aprobacion; elimina ese requisito si deseas un flujo totalmente automatico.
+
+La cuenta de Central debe tener verificado el namespace `io.github.jcprieto`. Genera las
+credenciales siguiendo
+la [guia de tokens de Central Portal](https://central.sonatype.org/publish/generate-portal-token/).
+La clave GPG debe corresponder al fingerprint configurado en el POM (`558442263B6AC29B9FF4AEB5F320065B4D152C59`) y su
+clave publica debe estar disponible
+segun los [requisitos de firma de Central](https://central.sonatype.org/publish/requirements/gpg/).
+Para exportar la clave privada a un archivo local que puedas copiar al secreto:
+
+```bash
+gpg --armor --export-secret-keys 558442263B6AC29B9FF4AEB5F320065B4D152C59 > private-key.asc
+```
+
+No subas ese archivo al repositorio y eliminalo despues de configurar el secreto.
+
+### Publicar una version
+
+1. Actualiza la version del padre y de los cinco modulos, incluidas sus referencias al padre,
+   en los seis `pom.xml`, y actualiza el changelog. Cada publicacion necesita una version nueva:
+   Maven Central no permite sobrescribir versiones existentes.
+2. Integra los cambios y crea un tag sobre ese commit con la version exacta o con prefijo `v`
+   (por ejemplo, `v3.0.5` para POMs con version `3.0.5`). No se admiten versiones `SNAPSHOT`.
+3. En GitHub, crea la release sobre ese tag y pulsa **Publish release**, sin marcarla como prerelease.
+4. Comprueba el workflow `release` en Actions. Solo termina correctamente cuando Central confirma
+   el estado `published`; la indexacion en el buscador puede tardar mas.
+
+Publica la release desde la interfaz de GitHub o con un token que pueda generar eventos de Actions.
+Una release creada por otro workflow con `GITHUB_TOKEN` no dispara este workflow, debido a la
+[restriccion de eventos de GitHub Actions](https://docs.github.com/en/actions/how-tos/writing-workflows/choosing-when-your-workflow-runs/triggering-a-workflow#triggering-a-workflow-from-a-workflow).
+Si falla antes de publicar, corrige la causa y reejecuta los jobs fallidos desde Actions.
+Si Central ya recibio o publico la version, revisa primero el deployment en Central Portal antes
+de reintentar; no crees otra release con las mismas coordenadas.
+
 ## Changelog
 
 Consulta el historial de cambios en [CHANGELOG.md](CHANGELOG.md).

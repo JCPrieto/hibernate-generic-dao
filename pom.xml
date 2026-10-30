@@ -140,9 +140,10 @@
 							</execution>
 						</executions>
 						<configuration>
-							<gpgExecutable>gpg</gpgExecutable>
+							<executable>gpg</executable>
 							<keyname>558442263B6AC29B9FF4AEB5F320065B4D152C59</keyname>
-							<passphrase>${env.GPG_PASSPHRASE}</passphrase>
+							<passphraseEnvName>GPG_PASSPHRASE</passphraseEnvName>
+							<bestPractices>true</bestPractices>
 						</configuration>
 					</plugin>
 					<plugin>
